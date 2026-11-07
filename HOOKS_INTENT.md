@@ -26,8 +26,8 @@ require semantic judgment.
   active copy.
 - Use user-level hooks, not project-local hooks, so the guardrails apply in
   every repository.
-- Use Windows-native commands and avoid runtime dependencies that are not
-  present in a normal Codex installation.
+- Implement hooks as dependency-free JavaScript executed by a user-managed
+  Node.js runtime. Do not resolve the runtime from an IDE or ACP installation.
 - Document the Codex trust review required after a hook definition or script
   changes.
 
@@ -39,9 +39,10 @@ codex-customization/
 ├── HOOKS_INTENT.md
 └── hooks/
     ├── hooks.json
-    ├── pre_tool_use.ps1
-    ├── policy.psd1
+    ├── pre_tool_use.mjs
+    ├── policy.json
     └── tests/
+        └── run-tests.mjs
 ```
 
 The exact layout may change during implementation if Codex path resolution or

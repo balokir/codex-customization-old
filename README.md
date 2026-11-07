@@ -10,8 +10,12 @@ state stored in `~/.codex`.
   handling and bounded tool discovery.
 - [`HOOKS_INTENT.md`](HOOKS_INTENT.md) — design and acceptance criteria for
   executable guardrails that may enforce deterministic parts of those rules.
-- [`HOOKS_PLAN.md`](HOOKS_PLAN.md) — Draft implementation-authority plan for
-  building, testing, activating, and rolling back those guardrails.
+- [`HOOKS_PLAN.md`](HOOKS_PLAN.md) — kindless orchestration parent and source
+  allocation for the hooks work.
+- [`ENGINE plan`](plans/HOOKS_ENGINE_PLAN.md),
+  [`DEPLOYMENT plan`](plans/HOOKS_DEPLOYMENT_PLAN.md), and
+  [`ACCEPTANCE plan`](plans/HOOKS_ACCEPTANCE_PLAN.md) — independently reviewed
+  implementation-authority plans.
 - [`LICENSE`](LICENSE) — repository license.
 
 Personal Codex skills are intentionally maintained in the separate
@@ -21,11 +25,10 @@ Personal Codex skills are intentionally maintained in the separate
 
 `AGENTS.md` is ready for user-level activation through a symbolic link.
 
-`HOOKS_INTENT.md` is the design source, and `HOOKS_PLAN.md` is currently a
-`Draft`. Hook configuration, scripts, and tests have not been implemented yet.
-The plan requires independent review before execution. The rules in
-`AGENTS.md` remain authoritative until hooks exist, and remain the semantic
-fallback after hooks are added.
+`HOOKS_INTENT.md` is the design source. All three child hooks plans are
+`Ready for execution`; hook configuration, scripts, and tests have not been
+implemented yet. The rules in `AGENTS.md` remain authoritative until hooks
+exist and remain the semantic fallback after hooks are added.
 
 ## Install Global Instructions On Windows
 
