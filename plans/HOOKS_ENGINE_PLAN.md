@@ -238,7 +238,7 @@ State: `[x]`
 
 ### E3: Enforce Tool-Discovery Decisions
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** recognized unsafe `ALL_TOOLS` source is denied while
   exact-name and bounded explicit-prefix discovery remains usable.
@@ -257,7 +257,19 @@ State: `[ ]`
   otherwise unclassifiable case produces no decision, a successful non-denying
   exit, valid bounded actionable guidance, and no payload, descriptor, schema,
   or other tool metadata disclosure.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** `C:\nvm4w\nodejs\node.exe
+  .\hooks\tests\run-tests.mjs` exited `0` under Node `v25.0.0` and reported
+  `E1/E2/E3: 67 fixture cases passed`. E3 process fixtures cover exact-name
+  availability, exact-name and explicit-prefix names-only filtering, limits
+  `0`, `100`, and `101`, direct serialization and emission, complete
+  descriptors, description and schema access, descriptor `find` and
+  `findIndex` searches, unrestricted inventory, generic terms, name-reduction
+  ordering, same-chain filter and limit association,
+  summary-only output, additional output sinks, aliases, computed properties,
+  regular-expression tokens, and template interpolation. Deterministically
+  unsafe source returned the documented deny shape; dynamic or obfuscated
+  source exited successfully with bounded non-denying guidance; no fixture
+  payload or metadata appeared in output.
 
 ### ENGINE Final Conformance
 

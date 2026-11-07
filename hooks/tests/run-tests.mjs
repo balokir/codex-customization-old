@@ -300,4 +300,174 @@ assertEmpty("read tokens inside quoted output are not commands", {
   },
 });
 
-console.log("E1/E2: 38 fixture cases passed");
+function codeEnvelope(source) {
+  return {
+    ...safeEnvelope,
+    tool_name: "functions.exec",
+    tool_input: { code: source },
+    private_metadata: SECRET_METADATA,
+  };
+}
+
+assertEmpty("exact-name availability check", codeEnvelope(`
+  const available = ALL_TOOLS.some(
+    x => x.name === "mcp__fixture__read_file"
+  );
+  text({ available });
+`));
+assertEmpty("exact-name names-only discovery at limit 100", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(x => x.name)
+    .filter(name => name === "mcp__fixture__read_file");
+  text({ count: names.length, names: names.slice(0, 100) });
+`));
+assertEmpty("explicit-prefix names-only discovery at limit 100", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__") || name.startsWith("mcp__safe__"));
+  text({ count: names.length, names: names.slice(0, 100) });
+`));
+assertEmpty("explicit-prefix names-only discovery at limit zero", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"));
+  text({ count: names.length, names: names.slice(0, 0) });
+`));
+assertEmpty("pipeline-bounded names-only discovery", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"))
+    .slice(0, 100);
+  text({ count: names.length, names });
+`));
+
+assertDeny("direct ALL_TOOLS serialization", codeEnvelope(`
+  text(JSON.stringify(ALL_TOOLS)); // ${SECRET_PAYLOAD}
+`));
+assertDeny("direct ALL_TOOLS emission", codeEnvelope(`
+  text(ALL_TOOLS); // ${SECRET_PAYLOAD}
+`));
+assertDeny("descriptor description filtering", codeEnvelope(`
+  const matches = ALL_TOOLS.filter(item => item.description.includes("fixture"));
+  text(matches); // ${SECRET_PAYLOAD}
+`));
+assertDeny("descriptor schema mapping", codeEnvelope(`
+  const schemas = ALL_TOOLS.map(item => item.inputSchema);
+  text(schemas); // ${SECRET_PAYLOAD}
+`));
+assertDeny("complete descriptor mapping", codeEnvelope(`
+  const descriptors = ALL_TOOLS.map(item => item);
+  text(descriptors); // ${SECRET_PAYLOAD}
+`));
+assertDeny("unrestricted names inventory without filter", codeEnvelope(`
+  const names = ALL_TOOLS.map(item => item.name);
+  text({ count: names.length, names: names.slice(0, 100) });
+`));
+assertDeny("filtered names inventory without output limit", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"));
+  text({ count: names.length, names });
+`));
+assertDeny("names output limit 101", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"));
+  text({ count: names.length, names: names.slice(0, 101) });
+`));
+assertDeny("generic descriptor search term", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.includes("tool"));
+  text({ count: names.length, names: names.slice(0, 100) });
+`));
+assertDeny("generic exact discovery term", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name === "memory");
+  text({ count: names.length, names: names.slice(0, 100) });
+`));
+assertDeny("descriptor filtering before name reduction", codeEnvelope(`
+  const names = ALL_TOOLS
+    .filter(item => item.name.startsWith("mcp__fixture__"))
+    .map(item => item.name)
+    .slice(0, 100);
+  text({ count: names.length, names });
+`));
+assertDeny("descriptor find before name reduction", codeEnvelope(`
+  const descriptor = ALL_TOOLS.find(
+    item => item.name === "mcp__fixture__read_file"
+  );
+  text(descriptor); // ${SECRET_PAYLOAD}
+`));
+assertDeny("descriptor findIndex before name reduction", codeEnvelope(`
+  const descriptorIndex = ALL_TOOLS.findIndex(
+    item => item.name === "mcp__fixture__read_file"
+  );
+  text({ descriptorIndex }); // ${SECRET_PAYLOAD}
+`));
+assertDeny("summary with an extra metadata field", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"));
+  text({ count: names.length, names: names.slice(0, 100), metadata: ${JSON.stringify(SECRET_PAYLOAD)} });
+`));
+assertDeny("names summary plus second output sink", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"));
+  text({ count: names.length, names: names.slice(0, 100) });
+  console.log(${JSON.stringify(SECRET_PAYLOAD)});
+`));
+assertDeny("unrelated filter and slice do not authorize inventory", codeEnvelope(`
+  const names = ALL_TOOLS.map(item => item.name);
+  const other = values
+    .filter(name => name.startsWith("mcp__fixture__"))
+    .slice(0, 100);
+  text({ count: names.length, names }); // ${SECRET_PAYLOAD}
+`));
+assertDeny("unrelated slice does not bound filtered names", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith("mcp__fixture__"));
+  const other = values.slice(0, 100);
+  text({ count: names.length, names }); // ${SECRET_PAYLOAD}
+`));
+
+assertGuidance("dynamic explicit-prefix value", codeEnvelope(`
+  const prefix = "mcp__fixture__";
+  const names = ALL_TOOLS
+    .map(item => item.name)
+    .filter(name => name.startsWith(prefix));
+  text({ count: names.length, names: names.slice(0, 100) });
+  // ${SECRET_PAYLOAD}
+`));
+assertGuidance("computed name-field access", codeEnvelope(`
+  const names = ALL_TOOLS
+    .map(item => item["name"])
+    .filter(name => name.startsWith("mcp__fixture__"));
+  text({ count: names.length, names: names.slice(0, 100) });
+  // ${SECRET_PAYLOAD}
+`));
+assertGuidance("obfuscated ALL_TOOLS global reference", codeEnvelope(`
+  const catalog = globalThis["ALL_" + "TOOLS"];
+  text(catalog); // ${SECRET_PAYLOAD}
+`));
+assertGuidance("aliased ALL_TOOLS source", codeEnvelope(`
+  const catalog = ALL_TOOLS;
+  text(catalog); // ${SECRET_PAYLOAD}
+`));
+assertGuidance("computed descriptor metadata access", codeEnvelope(`
+  const descriptions = ALL_TOOLS.map(item => item["description"]);
+  text(descriptions); // ${SECRET_PAYLOAD}
+`));
+assertGuidance("ALL_TOOLS token in regular expression source", codeEnvelope(`
+  const pattern = /ALL_TOOLS/u;
+  text({ matched: pattern.test("fixture") }); // ${SECRET_PAYLOAD}
+`));
+assertGuidance(
+  "ALL_TOOLS template interpolation",
+  codeEnvelope("text(`${ALL_TOOLS}`); // " + SECRET_PAYLOAD),
+);
+
+console.log("E1/E2/E3: 67 fixture cases passed");
