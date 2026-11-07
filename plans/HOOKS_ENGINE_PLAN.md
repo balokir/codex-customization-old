@@ -116,7 +116,7 @@ plan below.
 
 ### ENGINE Plan Core
 
-- **Status:** `Ready for execution`.
+- **Status:** `Completed`.
 - **Permitting result:**
   [`PKG-HOOK-ENGINE`](#planning-gate-result-pkg-hook-engine), `DELIVERY`.
 - **Reviewed baseline:**
@@ -283,8 +283,32 @@ After `E1` through `E3` are complete and before ENGINE becomes `Completed`:
 
 #### ENGINE Final Conformance Evidence
 
-Pending execution. Record actual invocations, outcomes, reviewed content
-identity, and any external limitation here.
+`C:\nvm4w\nodejs\node.exe .\hooks\tests\run-tests.mjs` exited `0` under
+Node `v25.0.0` and reported `E1/E2/E3: 67 fixture cases passed`. The complete
+suite re-established the reviewed allow, deny, and fail-open outcomes, valid
+bounded structured output, and payload/metadata confidentiality for the Gate
+contract.
+
+The ENGINE execution range from `1490d61` through producing commit
+`7f18706b4189dcce9a61dd40f9e08cbcfc439235` changed only the three authorized
+engine artifacts and this ENGINE plan record. `README.md`, `HOOKS_INTENT.md`,
+activation configuration, and the DEPLOYMENT and ACCEPTANCE child regions did
+not change during ENGINE execution. Source inspection found only built-in
+`node:` imports and no package or lock file, dependency addition, or scope
+drift.
+
+Exact ENGINE content identity handed to DEPLOYMENT (SHA-256):
+
+- `hooks/pre_tool_use.mjs`:
+  `0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3`;
+- `hooks/policy.json`:
+  `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`;
+- `hooks/tests/run-tests.mjs`:
+  `f2aa2dc21b71ff8a01cb1fe4dc7293278c6f78735d089a9a07697ff538cf643a`.
+
+External limitation: this fixture-only ENGINE conformance does not claim live
+host compatibility, activation, trust, or behavioral acceptance; those remain
+owned by DEPLOYMENT and ACCEPTANCE.
 
 ## Review Handoff
 
