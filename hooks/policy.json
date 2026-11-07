@@ -3,6 +3,7 @@
   "inputSchemaVersion": 1,
   "maxInputBytes": 65536,
   "maxGuidanceChars": 240,
+  "maxDecisionReasonChars": 240,
   "supportedTools": {
     "shell": [
       "Bash"
@@ -18,6 +19,26 @@
     "missingField": "Hook input was missing a required PreToolUse field, so the call was not blocked. Use the documented envelope and review AGENTS.md.",
     "unsupportedSchema": "Hook input uses an unsupported schema version, so the call was not blocked. Review and version engine support before relying on it.",
     "unknownTool": "Hook did not recognize this tool shape, so it did not block the call. Bound output at the producer and review AGENTS.md.",
-    "invalidToolInput": "Hook could not normalize this tool input, so the call was not blocked. Use a reviewed tool shape and review AGENTS.md."
+    "invalidToolInput": "Hook could not normalize this tool input, so the call was not blocked. Use a reviewed tool shape and review AGENTS.md.",
+    "ambiguousRead": "Hook could not prove this read is producer-bounded, so it was not blocked. Probe the target size, then use an explicit range or limit.",
+    "dynamicRead": "Hook could not classify a dynamic read target, so it was not blocked. Resolve the path, probe its size, and use an explicit range or limit.",
+    "ambiguousSearch": "Hook could not prove this search is scoped and producer-bounded, so it was not blocked. Add an explicit target and result bound."
+  },
+  "boundedReads": {
+    "knownHighVolumeNames": [
+      "AGENTS.md",
+      "SKILL.md"
+    ],
+    "knownHighVolumeExtensions": [
+      ".log",
+      ".out",
+      ".report",
+      ".trace"
+    ],
+    "denyReasons": {
+      "knownHighVolume": "Complete read of a known high-volume target requires an explicit producer-side range or limit.",
+      "multipleReads": "Multiple potentially high-volume reads must be split into individually bounded tool calls.",
+      "broadSearch": "Broad search must use an explicit scope and producer-side result bound."
+    }
   }
 }

@@ -199,7 +199,7 @@ State: `[x]`
 
 ### E2: Enforce Bounded-Read Decisions
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** every supported read or search shape receives the
   reviewed allow, deny, or no-decision outcome.
@@ -224,7 +224,17 @@ State: `[ ]`
   every E2 ambiguity or unavailable-prior-probe case produces no decision, a
   successful non-denying exit, valid bounded actionable guidance, and no
   payload or metadata disclosure.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** `C:\nvm4w\nodejs\node.exe
+  .\hooks\tests\run-tests.mjs` exited `0` under Node `v25.0.0` and reported
+  `E1/E2: 38 fixture cases passed`. E2 process fixtures cover size and
+  line-count probes, quoted producer-bounded reads, explicit ranges,
+  structured limits, missing and dynamic paths, unknown complete reads with
+  unavailable prior-probe evidence, complete known-high-volume reads,
+  multi-read batching, broad and unbounded scoped search, consumer-only
+  limits, and structured missing, dynamic, and multi-path inputs. Every
+  deterministic unsafe case returned the documented deny shape; every
+  ambiguous case exited successfully with bounded non-denying guidance; no
+  fixture payload or metadata appeared in structured output.
 
 ### E3: Enforce Tool-Discovery Decisions
 
