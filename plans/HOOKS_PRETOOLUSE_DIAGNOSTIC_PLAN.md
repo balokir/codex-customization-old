@@ -308,7 +308,7 @@ State: `[x]`
 
 ### I2: Prove Live Hook Transport
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** discovery, exact trust, and host outcome are observed for
   each attempted fresh-session mode; invocation, event shape, diagnostic
@@ -329,11 +329,41 @@ State: `[ ]`
   emitted but not enforced, or competing hook behavior cannot be isolated or
   fully accounted for. Lifecycle recovery still removes the verified exact link
   on any failure before execution stops.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** On 2026-11-08, the exact symbolic link to the
+  transport definition hash
+  `cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`
+  was installed and reviewed through `/hooks`. The review surface showed one
+  user `PreToolUse` definition, matcher `^Bash$`, the exact diagnostic command,
+  synchronous mode, and a five-second timeout. After exact-definition trust,
+  `/hooks` reported `Installed=1`, `Active=1`, no pending review, and no
+  competing hook.
+
+  The fresh-session matrix produced this bounded result:
+
+  | Session mode | Benign host outcome | Transport-deny host outcome | Handler record |
+  |---|---|---|---|
+  | `exec-default-fresh` | `executed`, exit `0` | `executed`, exit `0` | absent for both probes |
+  | `exec-ephemeral-fresh` | `executed`, exit `0` | `executed`, exit `0` | absent for both probes |
+  | `interactive-fresh` | `hook-error` | `hook-error` | absent for both probes |
+
+  Both interactive probes reported hook process creation failure as bounded
+  reason `access-denied-os-error-5`; unified exec did not start in those
+  sessions. Interactive startup did not request or persist project-folder
+  trust. No mode produced diagnostic evidence, so no hook-boundary event shape
+  or handler decision exists to support I3. Executor output was used only to
+  classify host outcome and was not substituted for hook input.
+
+  I2 therefore selects the terminal `I4` route and bounds the unresolved layer
+  between an exact trusted active definition and diagnostic-handler process
+  start/invocation, with session-mode-dependent host handling. The ENGINE proxy
+  was not run. Recovery reverified the exact link type, target, and source hash,
+  removed only that link, and proved the target remained intact and the user
+  activation path was absent. The resolved task temp directory remains present
+  for I4 cleanup and contains zero probe records.
 
 ### I3: Trace The ENGINE Decision Path
 
-State: `[ ]`
+State: `[N/A]` under I2's terminal transport routing rule.
 
 - **Resulting truth:** the exact live event, unchanged ENGINE result, and host
   outcome are correlated without modifying ENGINE or retaining the command.
