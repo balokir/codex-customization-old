@@ -169,7 +169,7 @@ single canonical state owner.
 
 ### E1: Establish The Documented Engine Contract
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** the JavaScript process consumes documented hook
   envelopes, normalizes supported synthetic tool inputs, and emits only valid,
@@ -188,7 +188,14 @@ State: `[ ]`
   exit behavior; every E1 fail-open class produces valid bounded actionable
   model-visible guidance; every structured response is valid JSON and
   discloses no payload or metadata.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** `C:\nvm4w\nodejs\node.exe
+  .\hooks\tests\run-tests.mjs` exited `0` under Node `v25.0.0` and reported
+  `E1: 13 fixture cases passed`. The process fixtures cover documented safe,
+  irrelevant-event, supported freeform/object/structured normalization,
+  unknown-tool, missing-field, malformed-JSON, unsupported-schema,
+  invalid-tool-input, oversized-envelope, and payload/metadata no-leak cases.
+  Every fail-open fixture returned valid JSON, bounded guidance of at most 240
+  characters, no deny decision, and no fixture payload or metadata.
 
 ### E2: Enforce Bounded-Read Decisions
 

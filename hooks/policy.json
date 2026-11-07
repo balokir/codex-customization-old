@@ -1,0 +1,23 @@
+{
+  "engineVersion": "1.0.0",
+  "inputSchemaVersion": 1,
+  "maxInputBytes": 65536,
+  "maxGuidanceChars": 240,
+  "supportedTools": {
+    "shell": [
+      "Bash"
+    ],
+    "code": [
+      "functions.exec"
+    ],
+    "mcpNamePattern": "^mcp__[A-Za-z0-9_-]+__[A-Za-z0-9_-]+$"
+  },
+  "guidance": {
+    "malformedJson": "Hook input could not be parsed, so the call was not blocked. Retry with a documented PreToolUse JSON envelope and review AGENTS.md.",
+    "oversizedInput": "Hook input exceeded the reviewed envelope limit, so the call was not blocked. Narrow the tool input and review AGENTS.md.",
+    "missingField": "Hook input was missing a required PreToolUse field, so the call was not blocked. Use the documented envelope and review AGENTS.md.",
+    "unsupportedSchema": "Hook input uses an unsupported schema version, so the call was not blocked. Review and version engine support before relying on it.",
+    "unknownTool": "Hook did not recognize this tool shape, so it did not block the call. Bound output at the producer and review AGENTS.md.",
+    "invalidToolInput": "Hook could not normalize this tool input, so the call was not blocked. Use a reviewed tool shape and review AGENTS.md."
+  }
+}
