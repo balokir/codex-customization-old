@@ -149,7 +149,7 @@ remaining prerequisite, dependency, ordering, or proof-obligation gap.
 
 ### Plan Core
 
-- **Status:** `Ready for execution`.
+- **Status:** `Complete — bounded unresolved transport boundary`.
 - **Permitting result:**
   [`PKG-HOOK-PRETOOLUSE-DIAGNOSTIC`](#planning-gate-result-pkg-hook-pretooluse-diagnostic),
   `CHARACTERIZATION`.
@@ -375,11 +375,13 @@ State: `[N/A]` under I2's terminal transport routing rule.
   exclude one-off state.
 - **Completion proof:** the ART-CAUSE decision tree selects exactly one supported
   layer or identifies the smallest remaining evidence gap.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** Not applicable. I2 produced no attributable handler
+  invocation or enforced diagnostic denial, so I3's predecessor was not
+  satisfied and the ENGINE-proxy branch was not run.
 
 ### I4: Classify The Cause And Publish The Handoff
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** the investigation has an evidence-backed conclusion,
   all live diagnostic state is removed, and correction work has a correctly
@@ -396,7 +398,45 @@ State: `[ ]`
   DEPLOYMENT plan. This investigation authorizes none of those corrections.
 - **Completion proof:** link absent, transient evidence removed, excluded files
   unchanged, and every conclusion maps to recorded bounded evidence.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** I2's sanitized matrix selects ART-CAUSE's
+  `diagnostic handler is not invoked` branch. Exact discovery and trust were
+  observed through `/hooks`, matcher `^Bash$` and the exact definition hash were
+  verified, and no competing hook was present. Nevertheless, both fresh
+  noninteractive modes executed the synthetic canaries with exit `0` and no
+  handler record, while both fresh interactive probes stopped before unified
+  exec with bounded hook error `access-denied-os-error-5` and no handler record.
+
+  The supported conclusion is therefore not a root cause: the smallest
+  unresolved boundary is after exact trusted-definition activation and before
+  diagnostic-handler process start or invocation, with session-mode-dependent
+  Codex 0.159.0 host handling. No hook-boundary event shape or decision was
+  observed, so executor evidence was not treated as hook input and ENGINE was
+  not implicated.
+
+  An issue-ready reproduction is prepared but was not submitted:
+
+  1. On Windows with Codex CLI `0.159.0` and independent Node `v25.0.0`, expose
+     the reviewed transport definition hash
+     `cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`
+     at the exact user hook link.
+  2. Use `/hooks` to verify one installed and active `PreToolUse` definition,
+     matcher `^Bash$`, synchronous mode, five-second timeout, and no competing
+     hook, then trust that exact definition.
+  3. In fresh default and ephemeral noninteractive sessions, invoke the benign
+     and transport canaries identified in `probe-spec.json`; observe command
+     exit `0`, no diagnostic record, and no enforced deny.
+  4. Repeat the two probes in fresh interactive sessions; observe bounded hook
+     process-creation error `access-denied-os-error-5`, no unified exec start,
+     and no diagnostic record.
+  5. Reverify and remove only the exact link, then confirm inactive behavior.
+
+  With the link absent, a fresh ephemeral inactive canary of length `39` and
+  SHA-256
+  `56738337eab7db5c0e44824d29bf2a518373d26375ef9dded84cf4e48760f957`
+  completed exactly one unified exec with status `completed`, exit `0`, zero
+  output characters, and zero diagnostic records. The exact task directory was
+  still empty, its resolved path was reverified, and only that directory was
+  removed. The user activation link and task directory are both absent.
 
 ### Final Conformance
 
@@ -416,13 +456,60 @@ recorded as not applicable under I2's routing rule:
 
 #### Final Conformance Evidence
 
-Pending execution. Record exact versions and hashes, sanitized mode matrix,
-invocation and decision classes, host outcomes, rollback proof, retained-file
-inventory, and the selected follow-up route.
+Final conformance completed on 2026-11-08 for Codex CLI `0.159.0` on Windows
+with independent Node `v25.0.0`:
+
+- The sanitized I2 matrix records `executed`/exit `0` for both noninteractive
+  modes and `hook-error`/`access-denied-os-error-5` for interactive mode. All
+  six live probes have invocation count `0`, decision class `unknown`, and no
+  retained per-probe record. The fresh inactive probe records one completed
+  command, exit `0`, zero output characters, and zero diagnostic records.
+- ART-CAUSE selects the handler-not-invoked branch and stops at the bounded
+  trusted-definition-to-process-start/invocation boundary. No executor trace
+  was used as hook input, and no unsupported event-shape or ENGINE conclusion
+  was made.
+- Production identities remain
+  `0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3`
+  for `hooks/pre_tool_use.mjs`,
+  `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`
+  for `hooks/policy.json`, and
+  `0ee2edb0ff7f4b35a24cd1099baf0dc86260911ee958a64aa070cd87af4d9879`
+  for production `hooks/hooks.json`.
+- The retained tracked diagnostic inventory is
+  `hooks.engine-proxy.json`
+  (`83c8dc83e8a53b95d48fce4e4150f87ac3c959056829b7f85f86a1a3846d3169`),
+  `hooks.transport-deny.json`
+  (`cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`),
+  `pre_tool_use_diagnostic.mjs`
+  (`6a1378d8574110241e239a77b210bb70f85d06bcb2c98d73f3304ff9244d7f64`),
+  `probe-spec.json`
+  (`9ddc2f93f76776fde2feda0830c6897adcc99afe8a7dc005aeb33e2a34c015e3`),
+  and `run-tests.mjs`
+  (`7aa8d4501ee6fc216fd7ba230d871acc1a6bf285111774fad51722dcbe03b88a`).
+  No live probe record or other transient diagnostic evidence remains.
+- The exact user link is absent, the resolved task temp directory is absent,
+  and the inactive canary proved the restored behavior. Exact-definition trust
+  was the only Codex-managed mutation and is inactive without its source link.
+  No Codex configuration, project-folder trust, or installation change was
+  performed; the installed CLI still reports `0.159.0`.
+- Relative to execution baseline `7e61c977a9a6ca67ebf8a6fbae13a4272866a3f2`,
+  repository changes are limited to the authorized tracked diagnostic package,
+  diagnostic fixtures, and this plan. ENGINE, policy, production config, D2,
+  intent, README, and ACCEPTANCE remain unchanged.
+- `C:\nvm4w\nodejs\node.exe .\hooks\tests\diagnostics\run-tests.mjs`
+  passed all `16` diagnostic fixture groups, including the 4 KiB evidence cap
+  and confidentiality checks. The existing suite passed `67` ENGINE cases and
+  `8` D1 deployment cases.
+
+The selected follow-up is an external Codex host issue or exact-version
+compatibility decision using the prepared bounded reproduction. No issue was
+submitted and no correction, D2 completion, upgrade, or downgrade was
+authorized or performed.
 
 ## Review Verdict
 
 Independent REVIEW verified the official-contract baseline, evidence allowlist,
 cause tree, writable boundary, diagnostic proxy transparency, session-mode
 feasibility, rollback path, conditional execution order, and proof obligations.
-The plan is `Ready for execution`.
+The execution verdict is `COMPLETE — BOUNDED UNRESOLVED`; the smallest supported
+boundary and follow-up route are recorded above.
