@@ -10,6 +10,11 @@ Child plan navigation:
 - [`DEPLOYMENT`](plans/HOOKS_DEPLOYMENT_PLAN.md#deployment-plan-core).
 - [`ACCEPTANCE`](plans/HOOKS_ACCEPTANCE_PLAN.md#acceptance-plan-core).
 
+Follow-up investigation navigation:
+
+- [`PRETOOLUSE-DIAGNOSTIC`](plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md) —
+  `Ready for execution` after independent review.
+
 No child plan is executable until an independent complete-plan review publishes
 `Ready for execution` for that child.
 
@@ -118,6 +123,10 @@ authorizes mutation of ENGINE, DEPLOYMENT, or `HOOKS_INTENT.md`.
   Gate G4 or accepted-source re-entry instead of silent expansion.
 
 ## Review Handoff
+
+The reviewed PRETOOLUSE-DIAGNOSTIC follow-up investigates the failed live denial
+proof without changing the original child graph or authorizing correction. Its
+separate review published `Ready for execution`.
 
 Independent REVIEW must evaluate each linked child plan separately against its
 own Gate result, writable boundary, prerequisites, transition order, proof
