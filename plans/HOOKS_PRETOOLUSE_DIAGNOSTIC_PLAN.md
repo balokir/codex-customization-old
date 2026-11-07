@@ -249,7 +249,7 @@ escape, or failed rollback stops the cycle and is recorded before handoff.
 
 ### I1: Freeze The Baseline And Build Bounded Diagnostics
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** the exact baseline, session-mode matrix, canaries, and
   diagnostic handler are fixed and fixture-verified before any live mutation.
@@ -260,7 +260,51 @@ State: `[ ]`
 - **Completion proof:** tests cover supported and malformed events, both handler
   branches, ENGINE pass-through, fixed decision shapes, evidence allowlisting,
   size limit, confidentiality, and cleanup without invoking Codex.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** On 2026-11-08, the official OpenAI Hooks contract was
+  rechecked at `https://learn.chatgpt.com/docs/hooks`. It still states that
+  unified exec matches `PreToolUse` as `Bash`, command hooks receive one JSON
+  object on stdin, Bash exposes `tool_input.command`, the documented
+  hook-specific deny shape and exit-code `2` path block supported calls, and
+  `/hooks` reviews and trusts an exact definition hash. No material contract
+  drift was found.
+
+  HEAD `7e61c977a9a6ca67ebf8a6fbae13a4272866a3f2` contains required D1 commit
+  `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb`. The verified SHA-256 identities
+  remained `0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3`
+  for `hooks/pre_tool_use.mjs`,
+  `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`
+  for `hooks/policy.json`, and
+  `0ee2edb0ff7f4b35a24cd1099baf0dc86260911ee958a64aa070cd87af4d9879`
+  for production `hooks/hooks.json`. Independent Node reported `v25.0.0` and
+  Codex reported `codex-cli 0.159.0`. The exact user activation link was absent.
+  Symbolic-link capability was fixture-verified inside the pre-resolved,
+  initially empty task directory
+  `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-20261108-6f3a2c`.
+
+  The relevant filesystem source scan found no inline user `PreToolUse`, no
+  project `.codex` hook source, and no installed plugin `hooks/hooks.json`;
+  production matcher `*` remained versioned but inactive because its exact user
+  link was absent. Live `/hooks` enumeration remains an I2 attribution check.
+
+  I1 added only the authorized diagnostic package and fixtures. The bounded
+  handler SHA-256 is
+  `6a1378d8574110241e239a77b210bb70f85d06bcb2c98d73f3304ff9244d7f64`;
+  exact transport and ENGINE-proxy definition hashes are respectively
+  `cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`
+  and `83c8dc83e8a53b95d48fce4e4150f87ac3c959056829b7f85f86a1a3846d3169`.
+  The fixed matrix covers fresh default exec, fresh ephemeral exec, and fresh
+  interactive mode, with the interactive mode skipped if it would persist
+  project trust. The benign, transport-deny, and ENGINE-proxy canaries retain
+  only lengths and SHA-256 identities in the probe specification.
+
+  `C:\nvm4w\nodejs\node.exe .\hooks\tests\diagnostics\run-tests.mjs`
+  exited `0` with `I1: 16 diagnostic fixture groups passed`. The fixtures cover
+  supported and malformed events, all allowlisted shape classes, exact deny
+  keys, invocation counting, unknown-shape confidentiality, the 4 KiB cap,
+  byte-for-byte ENGINE stdout/stderr and exit-status pass-through, non-zero
+  proxy results, and cleanup without invoking Codex. The existing ENGINE/D1
+  suite also exited `0` with
+  `E1/E2/E3: 67 fixture cases passed; D1: 8 deployment fixture cases passed`.
 
 ### I2: Prove Live Hook Transport
 

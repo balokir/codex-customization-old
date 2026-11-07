@@ -1,0 +1,41 @@
+{
+  "cliVersion": "0.159.0",
+  "independentRuntime": "C:\\nvm4w\\nodejs\\node.exe",
+  "matcher": "^Bash$",
+  "evidenceLimitBytes": 4096,
+  "probes": {
+    "benign": {
+      "probeId": "cptd-benign-20261108-901d7e",
+      "commandLength": 37,
+      "commandSha256": "edb8e593344c88b42e32179995b4b31dc0eb838c3120694d9613ebcf5b4ca303"
+    },
+    "transportDeny": {
+      "probeId": "cptd-transport-20261108-6f3a2c",
+      "commandLength": 40,
+      "commandSha256": "f3cc70eabeeb4f007a3301641d22ba981a31172083b3c199e618f7cfa3ef8fdb"
+    },
+    "engineProxy": {
+      "probeId": "cptd-engine-20261108-bd8741",
+      "commandLength": 187,
+      "commandSha256": "d40a6c049ad1da8e8df05c410c0f4291d0b6232a95cd523757f96ab2bbe81f39"
+    }
+  },
+  "sessionModes": [
+    {
+      "label": "exec-default-fresh",
+      "kind": "noninteractive",
+      "ephemeral": false
+    },
+    {
+      "label": "exec-ephemeral-fresh",
+      "kind": "noninteractive",
+      "ephemeral": true
+    },
+    {
+      "label": "interactive-fresh",
+      "kind": "interactive",
+      "ephemeral": false,
+      "skipIfProjectTrustMutationRequired": true
+    }
+  ]
+}

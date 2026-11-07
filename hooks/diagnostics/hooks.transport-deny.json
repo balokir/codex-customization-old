@@ -1,0 +1,19 @@
+{
+  "description": "Bounded PreToolUse transport diagnostic for Codex CLI 0.159.0.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny",
+            "commandWindows": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny",
+            "timeout": 5,
+            "statusMessage": "Checking bounded hook transport"
+          }
+        ]
+      }
+    ]
+  }
+}
