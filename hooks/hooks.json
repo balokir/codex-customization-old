@@ -1,0 +1,19 @@
+{
+  "description": "User-level bounded-output guardrails from codex-customization.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\pre_tool_use.mjs\"",
+            "commandWindows": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\pre_tool_use.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Checking tool output safety"
+          }
+        ]
+      }
+    ]
+  }
+}

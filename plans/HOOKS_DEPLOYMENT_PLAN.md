@@ -203,7 +203,7 @@ single canonical state owner.
 
 ### D1: Bind Deployment To The ENGINE Identity
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** versioned `hooks.json` invokes the exact completed
   ENGINE identity through the independent Node runtime and has deterministic
@@ -220,7 +220,17 @@ State: `[ ]`
   fixtures.
 - **Focused assertion:** config and lifecycle behavior remain bound to the
   exact ENGINE identity and preserve unrelated state.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** `C:\nvm4w\nodejs\node.exe
+  .\hooks\tests\run-tests.mjs` exited `0` under Node `v25.0.0` and reported
+  `E1/E2/E3: 67 fixture cases passed; D1: 8 deployment fixture cases passed`.
+  The D1 fixtures parse the current Codex `PreToolUse` command-handler shape,
+  require the absolute `C:\nvm4w\nodejs\node.exe` `commandWindows` runtime,
+  the absolute completed ENGINE path, and an explicit five-second timeout,
+  and verify the ENGINE script and policy SHA-256 identities from Final
+  Conformance. Actual isolated symbolic-link fixtures cover install, missing
+  source, preserved existing destination, preserved wrong target, independent
+  runtime execution, exact-link disable, and exact-source restore while an
+  unrelated sentinel remains unchanged.
 
 ### D2: Activate, Trust, Disable, And Restore
 
