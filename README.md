@@ -68,32 +68,46 @@ supported tool shape or policy rule. The uninstall/inactive-state test for
 this portable installation has not yet been run; the previous diagnostic
 installation was separately tested for clean deactivation.
 
-## Temporary PostToolUse truncation experiment
+## Isolated PostToolUse truncation experiment
 
-A non-blocking `PostToolUse` hook runs for `Bash` and records metadata
-**only** for the synthetic canary `CPTD-POST-20261108-PROBE`. It does not
-modify the tool result or record the command or response text. The evidence
-file is `$env:TEMP\codex-posttooluse-probe-20261108.json` on Windows.
+The diagnostic is **not** installed in the normal user hooks configuration.
+Create a disposable Codex profile and an empty working directory:
 
-Run `node .\hooks\tests\post_tool_use_probe.test.mjs`, then start a new
-IDEA Custom ACP chat after reviewing the updated hook definition in bundled
-Codex CLI `/hooks`. Submit exactly one harmless shell command:
+```powershell
+node .\experiments\post-tool-use\setup.mjs
+$env:CODEX_HOME = Join-Path $env:TEMP 'codex-posttooluse-isolated\codex-home'
+Set-Location (Join-Path $env:TEMP 'codex-posttooluse-isolated\workspace')
+& 'C:\nvm4w\nodejs\codex-acp.cmd' cli
+```
+
+The lab's hooks.json contains only a non-blocking `PostToolUse` diagnostic.
+The normal user `PreToolUse` and user-level `AGENTS.md` are absent from this
+separate `CODEX_HOME`; the empty workspace avoids project instructions.
+The setup stops if an ancestor already has an `AGENTS.md`,
+`AGENTS.override.md`, or project-local Codex configuration.
+
+The isolated profile may require separate interactive login. Do not copy
+`auth.json` or tokens from the working Codex profile.
+
+In the bundled CLI open `/hooks`, verify that the only listed hook is the
+PostToolUse probe, and approve it if needed. Run exactly one command:
 
 ```powershell
 Write-Output 'CPTD-POST-20261108-PROBE'; 1..6000 | ForEach-Object { 'row {0:D5} {1}' -f $_, ('X' * 30) }
 ```
 
-Check the evidence file and compare `truncation_marker_present`,
-`response_bytes`, and `response_type` with the visible shell result.
-If no evidence appears, do **not** conclude that PostToolUse was never
-invoked; the response could have exceeded the 1 MiB input cap or the
-host may have skipped this hook. If the marker is absent, the hook may
-run **before** platform truncation, so absence is not proof of completeness.
-No blocking is enabled until the host behavior is verified.
+Compare the CLI-visible truncation warning with metadata in
+`$env:TEMP\codex-posttooluse-probe-20261108.json`, especially
+`response_present`, `response_bytes`, `response_type`, and
+`truncation_marker_present`. The hook stores no response content.
 
-This is a temporary diagnostic that adds a Node process after each shell
-tool call. Remove the `PostToolUse` entry and the probe when the
-experiment ends; keep the production `PreToolUse` unchanged.
+If evidence is absent or no marker is recorded, do not conclude the
+result was complete: hook invocation may be skipped, its 1 MiB input cap
+may be exceeded, or truncation may occur after the hook runs.
+
+To repeat through IDEA, use a **separately configured** Custom ACP agent
+with this `CODEX_HOME` and open the empty lab workspace as the IDEA project.
+Do not use your normal project: its `AGENTS.md` would invalidate isolation.
 
 ## Uninstall
 

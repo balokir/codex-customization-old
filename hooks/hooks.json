@@ -14,20 +14,6 @@
           }
         ]
       }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "^Bash$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "c=\"${CODEX_HOME:-$HOME/.codex}\"; \"$c/codex-customization-node\" \"$c/codex-customization-hooks/post_tool_use_probe.mjs\"",
-            "commandWindows": "$c = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }; & (Join-Path $c 'codex-customization-node.exe') (Join-Path $c 'codex-customization-hooks\\post_tool_use_probe.mjs')",
-            "timeout": 5,
-            "statusMessage": "Observing test truncation marker"
-          }
-        ]
-      }
     ]
   }
 }
