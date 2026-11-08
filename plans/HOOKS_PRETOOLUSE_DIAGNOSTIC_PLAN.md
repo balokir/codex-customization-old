@@ -106,8 +106,8 @@ extension methods. It advertises `codexHooks` only on the ACP v1 initialization
 path, and its list implementation filters App Server results to hooks whose
 source is `sessionFlags`. This is adapter implementation evidence, not proof
 that the running IDEA client negotiated the capability or can see the exact
-user-level source. IDEA capability negotiation, hook-management UI, and source listing are
-optional compatibility diagnostics, not conditions for functional
+user-level source. IDEA capability negotiation, hook-management UI, and source
+listing are optional compatibility diagnostics, not conditions for functional
 `PreToolUse` verification. Private ACP methods must not be called out of band
 and then attributed to IDEA.
 
@@ -210,7 +210,7 @@ plan below.
 
 ### Plan Core
 
-- **Status:** `In execution`.
+- **Status:** `Completed`.
 - **Permitting result:**
   [`PKG-HOOK-PRETOOLUSE-DIAGNOSTIC-ACP`](#planning-gate-result-pkg-hook-pretooluse-diagnostic-acp),
   `CHARACTERIZATION`.
@@ -464,12 +464,12 @@ State: `[x]`
   production ENGINE denial, and host enforcement without retaining the command.
   Under ART-ACP-CAUSE, the production ENGINE decision path is supported through
   the target ACP host: a valid proxy denial was emitted and enforced, leaving no
-  C3 evidence gap. This closes C3 only; C4 cleanup and inactive-state proof
-  remain pending.
+  C3 evidence gap. C4 subsequently removed all live diagnostic state and
+  confirmed inactive behavior.
 
 ### C4: Classify The ACP Cause And Restore State
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** the investigation has an ACP-specific evidence-backed
   conclusion, all live diagnostic state is removed, and correction work has a
@@ -487,7 +487,33 @@ State: `[ ]`
 - **Completion proof:** link absent, transient evidence removed, excluded files
   unchanged, all retained live evidence has target provenance, and every
   conclusion maps to bounded ACP-specific evidence.
-- **Completion evidence:** pending execution.
+- **Completion evidence (2026-11-08):** C4.1 removed the verified exact
+  `C:\Users\user\.codex\hooks.json` diagnostic symbolic link while leaving the
+  target ENGINE-proxy definition intact. Repository files and trust records
+  were unchanged by that transition.
+
+  C4.2 used one fresh IDEA Custom ACP session after removal. The benign canary
+  completed with exit code `0` and no `PreToolUse` hook message, while
+  `cptd-benign-20261108-901d7e.json` remained at `invocation_count: 3` and
+  `decision_class: allow`. The unchanged counter correlates the normal host
+  outcome with non-invocation after link removal and proves the inactive state.
+
+  For C4.3, the exact documented task-owned directory
+  `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-acp-20261108-7c97e4`
+  was verified as a normal directory containing only the three bounded C2/C3
+  records, with no nested directories or reparse points. Their probe IDs,
+  phases, and decision metadata matched the recorded checkpoints. That exact
+  directory and its contents were then removed. Final checks found both the
+  activation link and evidence directory absent, with no tracked hook-definition
+  diff.
+
+  The completed matrix supports one functional classification: the configured
+  IDEA ACP path invokes and enforces user-level `PreToolUse` decisions when the
+  reviewed definition is active, including a transparent production ENGINE
+  denial, and stops invoking the diagnostic after exact-link removal. The
+  earlier launch failure was caused by the diagnostic definition's Windows
+  command syntax, not an ACP transport or decision-consumption defect. No
+  external issue or production correction is indicated by this investigation.
 
 ### Final Conformance
 
@@ -512,9 +538,16 @@ not applicable under `C2`'s routing rule:
 
 #### Final Conformance Evidence
 
-Pending execution. Record the C1 independent runtime baseline, bounded IDEA
-handler decisions and host outcomes, C3 ENGINE evidence, rollback proof,
-and retained-file inventory. ACP/UI telemetry is optional.
+Completed on 2026-11-08. C1 fixed the independently installed NVM ACP runtime
+baseline. C2 correlated bounded handler allow/deny records with IDEA execution
+and blocking outcomes, and C3 repeated the production ENGINE denial in two
+fresh target sessions. C4 removed the exact activation link, observed normal
+inactive behavior in a fresh target session without incrementing the benign
+record, and removed the verified task-owned evidence directory. The final
+external-state check found neither the link nor transient evidence directory;
+tracked ENGINE, policy, production configuration, diagnostic hook definitions,
+tests, and trust records remained unchanged during C4. No optional UI or ACP
+lifecycle telemetry is required for the completed functional classification.
 
 ## Independent Review Record
 

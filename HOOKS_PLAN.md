@@ -13,8 +13,9 @@ Child plan navigation:
 Follow-up investigation navigation:
 
 - [`PRETOOLUSE-DIAGNOSTIC`](plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md) —
-  ACP-specific `In execution` investigation authority; C2 and C3 are complete,
-  with C4 cleanup and inactive-state proof still pending.
+  ACP-specific `Completed` investigation; C1 through C4 are complete, the
+  diagnostic link and task-owned evidence are absent, and no ACP functional
+  defect was found.
 
 No child plan is executable until an independent complete-plan review publishes
 `Ready for execution` for that child.

@@ -19,30 +19,29 @@ As of 2026-11-08:
 - C3 is complete after two separate fresh IDEA Custom ACP sessions exercised
   the ENGINE proxy. Both invocations reached the unchanged production ENGINE
   and both resulting denials were enforced before shell execution.
-- During the C2 review, the exact link was re-inspected read-only and found as
-  an active
-  `C:\Users\user\.codex\hooks.json` symbolic link to
-  `hooks/diagnostics/hooks.transport-deny.json`. C3 later used the ENGINE-proxy
-  definition; this documentation-only checkpoint did not inspect or change the
-  active link.
-- The task-owned evidence directory is
-  `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-acp-20261108-7c97e4`.
-  Independent C2 review reread both bounded records and confirmed the values
-  recorded below.
-- The current conversation supplied direct host outcomes. The retained handler
-  records include one C2 session ID, distinct turn IDs, and the canary-time
-  definition hash; per-canary process provenance was not captured. The earlier
-  fresh-session ID `01a1ba90-3f53-7933-8c69-f4df7b638149` is not silently
-  attributed to them.
-- The retained records identify the corrected canary-time transport definition
+- C4 is complete. The exact diagnostic activation link was removed, and a fresh
+  IDEA Custom ACP session executed the benign canary with exit code `0` and no
+  hook message. The benign record remained at `invocation_count: 3` and
+  `decision_class: allow`, proving non-invocation after removal.
+- The exact `C:\Users\user\.codex\hooks.json` link and task-owned evidence
+  directory
+  `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-acp-20261108-7c97e4`
+  are absent. C4 removed only that verified directory after confirming its three
+  bounded records matched the documented C2/C3 probes.
+- The C2 checkpoint below preserves the sanitized evidence values and direct
+  host outcomes formerly held in the transient records. Those records contained
+  one C2 session ID, distinct turn IDs, and the canary-time definition hash;
+  per-canary process provenance was not captured. The earlier fresh-session ID
+  `01a1ba90-3f53-7933-8c69-f4df7b638149` is not silently attributed to them.
+- The C2 checkpoint identifies the corrected canary-time transport definition
   by source hash. A later commit accidentally replaced the `commandWindows`
   property name with an empty key; that current tracked defect is distinct from
   and later than the completed C2 observations.
 
-When present, the diagnostic link is intentional but transient. It must be
-removed on a terminal C2 route, failure, or final C4 cleanup. An empty evidence
-directory is not proof that discovery, trust, or invocation succeeded or
-failed.
+The diagnostic link was intentional but transient and is now removed. An empty
+or absent evidence directory alone is not proof that discovery, trust, or
+invocation succeeded or failed; the inactive conclusion instead uses the fresh
+host outcome and unchanged invocation counter recorded before cleanup.
 
 ## Verified Runtime Boundary
 
@@ -155,19 +154,19 @@ forwarding, or IDEA decision consumption.
 | Boundary | Observation | Evidence classification |
 |---|---|---|
 | Independently verified runtime baseline | C1 fixed `codex-acp 2.5.0`, bundled Codex `0.165.0`, and the configured NVM command chain. The tracked C1 record reports 19 diagnostic fixture groups passing. | Repository-authoritative C1 evidence; the suite was not rerun during this documentation update. |
-| Windows handler launch | The retained records cite source SHA-256 `ab3b59c5fc64d9c16da3a5070440dd52b6f99f0a7ab0b7dc2032a7f76697006d`, which matches the transport definition with a named `commandWindows` property and an unquoted leading executable. | Independently verified against the retained records and reconstructed canary-time definition. The current tracked file instead has an empty property name and a different hash. |
+| Windows handler launch | The C2 records cited source SHA-256 `ab3b59c5fc64d9c16da3a5070440dd52b6f99f0a7ab0b7dc2032a7f76697006d`, which matches the transport definition with a named `commandWindows` property and an unquoted leading executable. | Independently verified before C4 cleanup against the transient records and reconstructed canary-time definition. The current tracked file instead has an empty property name and a different hash. |
 | Bundled CLI control | Hook discovered, enabled, and trusted; benign command executed; handler classified `allow`. | User-reported control outcome and handler evidence. Not target IDEA ACP evidence. |
 | IDEA ACP benign host outcome | The normal shell tool returned exit code `0` with no hook-failure message. | Directly observed host outcome in the current conversation. It proves execution, not handler invocation by itself. |
-| IDEA ACP benign handler evidence | `invocation_count` increased `2 -> 3`; `PreToolUse`; `Bash`; `expected-raw`; `allow`. | Independently reread from the retained 1,282-byte bounded record. |
+| IDEA ACP benign handler evidence | `invocation_count` increased `2 -> 3`; `PreToolUse`; `Bash`; `expected-raw`; `allow`. | Independently reread from the 1,282-byte bounded record before C4 cleanup. |
 | IDEA ACP deny host outcome | The host reported `Command blocked by PreToolUse hook: diagnostic-transport-deny` and did not execute the shell command. | Directly observed host outcome in the current conversation. |
-| IDEA ACP deny handler evidence | `invocation_count: 1`; `PreToolUse`; `Bash`; `expected-raw`; `deny`; `reason_code: transport-deny`. | Independently reread from the retained 1,366-byte bounded record. |
+| IDEA ACP deny handler evidence | `invocation_count: 1`; `PreToolUse`; `Bash`; `expected-raw`; `deny`; `reason_code: transport-deny`. | Independently reread from the 1,366-byte bounded record before C4 cleanup. |
 
 Together, the IDEA observations meet the simplified functional C2 criteria:
 the independent ACP baseline, handler `allow`, and handler `deny` enforced
 by the target IDEA host. The exact per-canary process identity,
 IDEA capability/trust UI, and ACP lifecycle events were not captured, but are
-optional diagnostic context rather than acceptance requirements. The retained
-handler records do contain session/turn identifiers and the canary-time source
+optional diagnostic context rather than acceptance requirements. The transient
+handler records contained session/turn identifiers and the canary-time source
 hash. Independent review found no material contradiction and closed C2.
 Production ENGINE behavior through the diagnostic proxy was subsequently
 verified by C3 as recorded below.
@@ -187,24 +186,40 @@ fresh sessions. ART-ACP-CAUSE therefore supports the production ENGINE decision
 path through the target ACP host; it identifies no remaining C3 evidence gap
 and does not require another canary or optional telemetry.
 
+## C4 Completion Checkpoint
+
+| Boundary | Observation | Evidence classification |
+|---|---|---|
+| Exact-link rollback | `C:\Users\user\.codex\hooks.json` was removed without changing its ENGINE-proxy target definition, repository files, or trust records. | Verified C4.1 rollback to the inactive user-level state. |
+| Fresh inactive session | The benign canary exited `0` with no `PreToolUse` message; its record remained at `invocation_count: 3` and `decision_class: allow`. | Correlated host and handler evidence proving no post-removal invocation. |
+| Task-owned evidence cleanup | The documented directory was a normal directory containing only the three expected bounded records and no nested directories or reparse points; it was removed and is absent. | Verified exact-scope cleanup with no scan or deletion of unrelated temp content. |
+| Tracked definitions | Final checks found no tracked hook-definition diff. | ENGINE, policies, hook definitions, and tests were not modified by C4. |
+
+The completed cause classification is functional success, not an ACP defect.
+The target IDEA ACP path invokes and enforces user-level `PreToolUse` decisions
+when the reviewed definition is active, including the production ENGINE denial,
+and becomes inactive after exact-link removal. The earlier handler launch
+failure maps to the diagnostic definition's Windows command syntax. No external
+ACP issue or production correction follows from this investigation.
+
 ## Recommended Continuation
 
 1. Do not repeat the completed C2 or C3 canaries solely to collect optional
    telemetry.
-2. In a separately authorized execution session, complete C4 with exact-link
-   removal, inactive-state verification, and cleanup of the task-owned evidence
-   directory.
+2. Keep the diagnostic link and evidence directory absent. Any later hook
+   activation must use separate authority.
+3. Resume the original hook lifecycle only at DEPLOYMENT D2 under
+   [`HOOKS_DEPLOYMENT_PLAN.md`](HOOKS_DEPLOYMENT_PLAN.md); ACCEPTANCE remains
+   gated by that completed handoff.
 
-## Safe Continuation Prompt
+## Completion Handoff
 
-The C3 review is complete. A later execution session may resume at C4; this
-documentation review did not start it:
+The PRETOOLUSE-DIAGNOSTIC child plan is complete:
 
 ```text
-Resume plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md at C4. Treat C1 through C3 as
-complete and do not rerun their canaries solely for optional process, UI, or
-lifecycle telemetry. Complete only the authorized exact-link removal,
-inactive-state verification, classification, and task-owned evidence cleanup.
+Treat plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md as completed. Do not restore its
+diagnostic link, recreate its transient evidence, or rerun canaries for optional
+telemetry. Continue only under separately reviewed downstream authority.
 ```
 
 ## Independent C2 Review Verdict
@@ -243,4 +258,3 @@ contradiction affecting this functional acceptance.
 - [`hooks/diagnostics/pre_tool_use_diagnostic.mjs`](../hooks/diagnostics/pre_tool_use_diagnostic.mjs)
 - [Official OpenAI Hooks documentation](https://learn.chatgpt.com/docs/hooks)
 - [Official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server)
-
