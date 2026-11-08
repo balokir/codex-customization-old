@@ -68,6 +68,33 @@ supported tool shape or policy rule. The uninstall/inactive-state test for
 this portable installation has not yet been run; the previous diagnostic
 installation was separately tested for clean deactivation.
 
+## Temporary PostToolUse truncation experiment
+
+A non-blocking `PostToolUse` hook runs for `Bash` and records metadata
+**only** for the synthetic canary `CPTD-POST-20261108-PROBE`. It does not
+modify the tool result or record the command or response text. The evidence
+file is `$env:TEMP\codex-posttooluse-probe-20261108.json` on Windows.
+
+Run `node .\hooks\tests\post_tool_use_probe.test.mjs`, then start a new
+IDEA Custom ACP chat after reviewing the updated hook definition in bundled
+Codex CLI `/hooks`. Submit exactly one harmless shell command:
+
+```powershell
+Write-Output 'CPTD-POST-20261108-PROBE'; 1..6000 | ForEach-Object { 'row {0:D5} {1}' -f $_, ('X' * 30) }
+```
+
+Check the evidence file and compare `truncation_marker_present`,
+`response_bytes`, and `response_type` with the visible shell result.
+If no evidence appears, do **not** conclude that PostToolUse was never
+invoked; the response could have exceeded the 1 MiB input cap or the
+host may have skipped this hook. If the marker is absent, the hook may
+run **before** platform truncation, so absence is not proof of completeness.
+No blocking is enabled until the host behavior is verified.
+
+This is a temporary diagnostic that adds a Node process after each shell
+tool call. Remove the `PostToolUse` entry and the probe when the
+experiment ends; keep the production `PreToolUse` unchanged.
+
 ## Uninstall
 
 ```powershell
