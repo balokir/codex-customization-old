@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { tmpdir, homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,8 +18,14 @@ function checkAncestors() {
         throw new Error("Instruction file in workspace ancestry: " + join(at, name));
       }
     }
-    if (existsSync(join(at, ".codex", "hooks.json"))
-        || existsSync(join(at, ".codex", "config.toml"))) {
+    // The normal user-level ~/.codex is not project-local configuration.
+    // This lab uses its own CODEX_HOME, so the user's profile is ignored.
+    const userHome = resolve(homedir());
+    const isUserHome = process.platform === "win32"
+      ? at.toLowerCase() === userHome.toLowerCase()
+      : at === userHome;
+    if (!isUserHome && (existsSync(join(at, ".codex", "hooks.json"))
+        || existsSync(join(at, ".codex", "config.toml")))) {
       throw new Error("Project-local Codex config in: " + at);
     }
     const parent = dirname(at);
