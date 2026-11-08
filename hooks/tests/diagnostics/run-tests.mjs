@@ -89,14 +89,10 @@ for (const [config, branch] of [
   const handler = matcherGroup?.hooks?.[0];
   assert.equal(matcherGroup.matcher, "^Bash$");
   assert.equal(handler.type, "command");
-  if (branch === "transport-deny") {
-    assert.equal(
-      handler.commandWindows,
-      handler.command.replace(`"${RUNTIME}"`, RUNTIME),
-    );
-  } else {
-    assert.equal(handler.commandWindows, handler.command);
-  }
+  assert.equal(
+    handler.commandWindows,
+    handler.command.replace(`"${RUNTIME}"`, RUNTIME),
+  );
   assert.equal(handler.timeout, 5);
   assert.match(handler.command, /^"C:\\nvm4w\\nodejs\\node\.exe"/u);
   assert.match(handler.command, new RegExp(`--branch ${branch}`, "u"));
