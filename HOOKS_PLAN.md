@@ -74,7 +74,7 @@ Unmapped scope: none.
 | Child result | Kind | Depends on | Provides | Gate verdict |
 |---|---|---|---|---|
 | [`PKG-HOOK-ENGINE`](plans/HOOKS_ENGINE_PLAN.md#planning-gate-result-pkg-hook-engine) | `DELIVERY` | None | Reviewed engine version | `READY` |
-| [`PKG-HOOK-DEPLOYMENT`](plans/HOOKS_DEPLOYMENT_PLAN.md#planning-gate-result-pkg-hook-deployment) | `DELIVERY` | Completed ENGINE handoff | Active reviewed version | Revised D2 review pending |
+| [`PKG-HOOK-DEPLOYMENT`](plans/HOOKS_DEPLOYMENT_PLAN.md#planning-gate-result-pkg-hook-deployment) | `DELIVERY` | Completed ENGINE handoff | Active reviewed version | `READY`; production launcher prerequisite unresolved |
 | [`PKG-HOOK-ACCEPTANCE`](plans/HOOKS_ACCEPTANCE_PLAN.md#planning-gate-result-pkg-hook-acceptance) | `CHARACTERIZATION` | Completed DEPLOYMENT handoff | Host evidence and guidance | `READY` |
 
 ### Parent Coordination Contract
@@ -92,13 +92,15 @@ Unmapped scope: none.
 
 ### Aggregate State
 
-ENGINE and C1-C4 diagnostics are complete. DEPLOYMENT D2 now has revised
-functional acceptance criteria pending independent review, with a separately
-authorized production Windows launch fix required before activation.
-ACCEPTANCE remains gated by a completed DEPLOYMENT handoff.
+ENGINE and C1-C4 diagnostics are complete. DEPLOYMENT D2's revised functional
+acceptance criteria have completed independent review and are ready for
+execution only after the separately authorized production Windows launch fix
+provides its reviewed exact-version handoff. ACCEPTANCE remains gated by a
+completed DEPLOYMENT handoff.
 
-Only a currently reviewed child result authorizes execution. Revised D2
-is not yet executable; the aggregate parent grants no implementation authority.
+Only a currently reviewed child result authorizes execution. Revised D2 remains
+non-executable while its documented production launcher prerequisite is
+unresolved; the aggregate parent grants no implementation authority.
 
 ## Cross-Child Mismatch And Follow-Up Contract
 

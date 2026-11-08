@@ -180,22 +180,24 @@ Custom ACP remains the functional host for active/inactive/restored canaries.
 The completed diagnostic validates actual hook enforcement but does not
 fix or validate the still-quoted production `commandWindows` value.
 
-Revised D2 gate verdict: **pending independent review**. The former `READY`
-verdict applies to the previous D2 contract and does not authorize revised
-D2 execution. Production launch correction requires separate change authority
-and a reviewed version-bound handoff before activation.
+Revised D2 gate verdict: **READY after the documented prerequisite**. Independent
+review approves the revised D2 contract, but D2 execution remains prohibited
+until the production launch correction is completed under separate change
+authority and supplies a reviewed version-bound handoff before activation.
 
 ## Child Plan: DEPLOYMENT
 
 ### DEPLOYMENT Plan Core
 
-- **Status:** `Draft` (D2 revision pending independent review and production command correction).
+- **Status:** `Ready for execution after the documented prerequisite`
+  (production command correction remains unresolved).
 - **Permitting result:**
   [`PKG-HOOK-DEPLOYMENT`](#planning-gate-result-pkg-hook-deployment),
   `DELIVERY`.
 - **Previous reviewed repository baseline:**
   `ce129a32dba1b158f111887e68ce798cd317f917`.
-  The revised D2 contract has not yet been independently reviewed.
+  The revised D2 contract has completed independent review; the production
+  command correction has not been completed by this review.
 - **Goal:** activate and lifecycle-verify one exact completed ENGINE identity in
   the configured IDEA Custom ACP integration.
 - **Canonical sources:** every [parent-mapping](../HOOKS_PLAN.md#pass-1-source-mapping) row owned by DEPLOYMENT.
@@ -294,12 +296,13 @@ State: `[x]`
 
 ### D2: Activate, Trust, Disable, And Restore
 
-State: `[ ]` (not executable until revised-plan review and production correction)
+State: `[ ]` (reviewed; not executable until the production correction handoff)
 
 - **Resulting truth:** the exact reviewed production hook blocks the selected
   read-only canary when active, permits it while the user link is removed,
   and blocks it again after exact restoration through IDEA Custom ACP.
-- **Authorization:** `PKG-HOOK-DEPLOYMENT`, revised review pending.
+- **Authorization:** reviewed `PKG-HOOK-DEPLOYMENT`; execution remains blocked
+  by the documented production correction prerequisite.
 - **Predecessor:** D1 historical handoff plus an authorized correction of the
   production Windows launch command and reviewed current-version fixtures.
 - **Inputs:** exact production config and ENGINE identity, independent ACP
@@ -365,6 +368,20 @@ Review evidence on 2026-11-08:
 
 Original DEPLOYMENT review verdict: `Ready for execution`.
 
-Review of the revised D2 criteria: **pending**. The prior review does not
-approve this revision. Production Windows command correction must be
-separately authorized, reviewed, and verified before activation.
+Independent review of the revised D2 criteria completed on 2026-11-08. The
+review mapped the lifecycle and acceptance criteria to `HOOKS_INTENT.md`, the
+parent allocation, and the completed C1-C4 evidence. It found that:
+
+- the fresh-session production `deny -> allow -> deny` lifecycle establishes
+  active enforcement, inactive non-invocation, and exact-version restoration;
+- activation, exact-definition trust, independent runtime and ACP identity,
+  rollback, and unrelated-state preservation have explicit proof boundaries;
+- IDEA hook-management UI, ACP lifecycle telemetry, and per-canary process or
+  session attribution remain optional unless a concrete contradiction makes
+  the functional outcomes ambiguous; and
+- the quoted production `commandWindows` launcher remains an unresolved,
+  separately authorized and reviewed prerequisite rather than D2 work.
+
+Review verdict: **Ready for execution after the documented prerequisite**. This
+review does not claim that the production launcher correction or its reviewed
+version-bound handoff already exists, and it does not authorize that correction.
