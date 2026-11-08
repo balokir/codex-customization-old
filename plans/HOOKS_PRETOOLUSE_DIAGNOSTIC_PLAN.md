@@ -39,11 +39,12 @@ this revised plan.
   [official OpenAI Hooks contract](https://learn.chatgpt.com/docs/hooks);
   the [official Codex IDE integration guidance](https://learn.chatgpt.com/docs/codex/ide);
   and the [official Codex App Server lifecycle reference](https://learn.chatgpt.com/docs/app-server).
-- **Primary invariant `INV-ACP-ATTRIBUTION`:** every live conclusion is tied to
-  the exact IDEA Custom ACP configuration, adapter identity, bundled Codex
-  identity, ACP session/process lifetime, hook definition hash, trust state,
-  handler evidence, and host outcome. Evidence from standalone `codex` TUI or
-  `codex exec` is never substituted for ACP evidence.
+- **Primary invariant `INV-ACP-ATTRIBUTION`:** functional acceptance uses
+  the C1 independent ACP runtime baseline together with IDEA handler evidence
+  and observed IDEA shell outcomes. Bundled CLI controls do not substitute for
+  target IDEA evidence. Per-canary process/session identities and definition
+  hashes, IDEA hook-management capabilities and trust UI, and ACP lifecycle
+  notifications are optional diagnostics, not C2 acceptance gates.
 - **Depends on:** D1 commit
   `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb`, unchanged ENGINE runtime
   artifacts, the known inactive user-link state, and the existing IDEA Custom
@@ -52,14 +53,13 @@ this revised plan.
   explicitly bounded unresolved ACP layer, plus the correct follow-up handoff.
 - **Scope boundary:** dependency-free diagnostic handlers and fixtures, bounded
   sanitized evidence, the exact temporary user-level diagnostic link, fresh
-  IDEA Custom ACP sessions, and exact-definition trust changes performed only
-  through a trust surface exposed to the target ACP integration.
-- **Minimum closure:** prove the actual ACP process identity; prove hook
-  discovery and exact-definition trust within the target integration; prove
-  whether a new ACP session invokes the diagnostic handler; capture the
-  allowlisted `PreToolUse` shape; prove deterministic diagnostic denial; trace
-  the unchanged ENGINE decision through a transparent proxy when permitted;
-  correlate ACP lifecycle and host outcome; and restore the inactive state.
+  IDEA Custom ACP sessions, and trust managed through documented interactive
+  Codex mechanisms (including the independent bundled CLI).
+- **Minimum closure:** establish the configured independent ACP runtime
+  baseline; prove benign `PreToolUse` handler invocation and `allow` through
+  IDEA; prove diagnostic `deny` emitted by the handler and enforced before
+  shell execution in IDEA; check ENGINE through the C3 proxy when permitted;
+  and restore the inactive user-level state in C4.
 - **Explicit exclusions:** standalone CLI `0.159.0`; `codex exec`; terminal TUI
   evidence; JetBrains' separate bundled ACP installation; production ENGINE,
   policy, or `hooks.json` changes; D2 completion; README, intent, or ACCEPTANCE
@@ -106,8 +106,10 @@ extension methods. It advertises `codexHooks` only on the ACP v1 initialization
 path, and its list implementation filters App Server results to hooks whose
 source is `sessionFlags`. This is adapter implementation evidence, not proof
 that the running IDEA client negotiated the capability or can see the exact
-user-level source. The investigation must observe both through IDEA. It must
-not invoke these private methods out of band as substitute target evidence.
+user-level source. IDEA capability negotiation, hook-management UI, and source listing are
+optional compatibility diagnostics, not conditions for functional
+`PreToolUse` verification. Private ACP methods must not be called out of band
+and then attributed to IDEA.
 
 ### Official Contract Baseline
 
@@ -124,8 +126,8 @@ time and record the access date. The present baseline is:
 - official App Server behavior is supporting context, not proof that
   `codex-acp` forwards those notifications unchanged to IDEA; and
 - official OpenAI documentation does not establish JetBrains Custom ACP
-  capability negotiation or the adapter's private hook extensions. Those are
-  verified from the installed adapter and the running target integration.
+  capability negotiation or the adapter's private hook extensions. These are
+  optional compatibility diagnostics rather than C2 acceptance requirements.
 
 Documentation drift is evidence. A material contract change stops execution
 and requires plan revision.
@@ -134,12 +136,12 @@ and requires plan revision.
 
 | Trigger | Result | ACP-specific consequence |
 |---|---|---|
-| `LIFECYCLE` | `YES` | Link, trust, ACP process, thread, and turn states must be explicit |
+| `LIFECYCLE` | `YES` | Exact link activation, new chat after changes, and rollback must be explicit |
 | `CONCURRENCY` | `YES` | Other matching hooks and simultaneous ACP sessions must be excluded or attributed |
-| `AUTHORITY` | `YES` | Discovery, trust, invocation, decision, and enforcement are separate facts |
+| `AUTHORITY` | `YES` | Handler decisions and IDEA host outcomes are separate evidence sources |
 | `RECOVERY` | `YES` | Every failure path removes only the verified exact link and closes task-owned diagnostics |
 | `COMPATIBILITY` | `YES` | ACP adapter, bundled Codex, tool mapping, event keys, and Windows execution may differ |
-| `READINESS` | `YES` | A cause claim requires complete ACP-boundary attribution |
+| `READINESS` | `YES` | Functional success requires correlated handler evidence and IDEA host enforcement |
 | `MULTI_ATOMICITY` | `NO` | No production state becomes accepted during characterization |
 | `CROSS_LAYER` | `NO` | No database or remote service boundary is involved |
 
@@ -175,9 +177,8 @@ Unknown shapes are classified without copying their values.
 | Observation | Classification |
 |---|---|
 | Process provenance does not resolve to the configured NVM `codex-acp.cmd` chain | wrong host; evidence invalid |
-| IDEA does not negotiate the adapter's ACP v1 `codexHooks` capability | ACP protocol/capability compatibility issue |
-| Capability is negotiated but the adapter does not list the exact user-level source, including because of its `sessionFlags` filter | ACP source/filter compatibility issue |
-| Target ACP discovers the source but exposes no authorized exact-definition trust path | ACP trust-surface compatibility issue |
+| IDEA lacks ACP hook-management capability, listing, or trust UI while hooks execute | Optional client management limitation, not a C2 failure |
+| The configured IDEA ACP session produces no handler evidence | Check active definition, trust, shell matcher, and handler launch |
 | Trusted definition is active but handler is not invoked | ACP-to-Codex hook transport or process-start issue |
 | Handler runs but input violates the documented shape | ACP/Codex host-contract compatibility issue |
 | Synthetic diagnostic deny is emitted but ACP host executes | ACP decision-consumption issue |
@@ -187,9 +188,9 @@ Unknown shapes are classified without copying their values.
 | Competing hook or concurrent session can affect the result | evidence unattributable until isolated or fully accounted for |
 | No row receives complete evidence | unresolved; report the smallest unproven ACP boundary without a root-cause claim |
 
-IDEA UI output, ACP lifecycle events, process observations, and diagnostic
-handler records are distinct evidence sources. None may silently stand in for
-another.
+Handler evidence and IDEA host outcomes must be evaluated independently and
+correlated for functional acceptance. ACP lifecycle events, process telemetry,
+and IDEA hook-management UI are optional diagnostics.
 
 ### Gate Conclusion
 
@@ -230,9 +231,8 @@ plan below.
 - `C:\nvm4w\nodejs\node.exe` is available independently of IDEA.
 - The exact user activation link is absent before investigation.
 - A new IDEA Custom ACP chat can start after each activation-state change.
-- The target ACP integration can surface negotiated capability and
-  discovery/trust state, or an explicit absence of one of those surfaces,
-  without falling back to a standalone CLI.
+- The configured IDEA Custom ACP chat can execute the diagnostic canaries;
+  IDEA-specific discovery and trust controls are not prerequisites.
 - A fresh task-owned temporary directory can be created, resolved, bounded, and
   removed without scanning unrelated temp content.
 
@@ -246,9 +246,9 @@ The writable boundary is limited to:
 - one exact, pre-resolved task-owned directory below the operating-system temp
   directory for transient sanitized ACP probe records;
 - the exact link `C:\Users\user\.codex\hooks.json`; and
-- the Codex-managed trust record for each exact diagnostic definition, changed
-  only through a trust interaction exposed by the target IDEA Custom ACP
-  integration.
+- the Codex-managed trust record for the exact diagnostic definition, changed
+  only through the documented Codex trust workflow (including the bundled
+  CLI), not through direct trust-file editing.
 
 No other user-managed path under `C:\Users\user\.codex` is writable. Execution
 must not edit `codex-acp.cmd`, its npm package, bundled Codex, IDEA settings,
@@ -279,21 +279,19 @@ production `hooks/hooks.json`, ENGINE, DEPLOYMENT, ACCEPTANCE, README,
   IDEA status text, or ACP lifecycle event alone.
 - Do not upgrade, downgrade, reinstall, or reconfigure any runtime during the
   baseline matrix.
-- If target ACP trust requires an unauthorized configuration mutation, record
-  the trust-surface boundary and stop instead of using another client.
-- Do not call `_codex/hooks/list` or `_codex/hooks/trust` from a separate ACP
-  harness. Only the capability negotiated and actions exposed by the configured
-  IDEA client count as target evidence.
+- Use documented bundled CLI approval when necessary, but never present CLI
+  canary execution as proof of IDEA ACP enforcement.
+- Do not call private `_codex/hooks/list` or `_codex/hooks/trust` from another
+  harness or require those methods for functional C2 acceptance.
 
 ### Lifecycle And Recovery
 
 | State | Event | Required result |
 |---|---|---|
-| Inactive | Reverify target ACP identity and initialization | Exact configured NVM ACP chain and negotiated capability state established |
-| Inactive | Install exact diagnostic link | Exact target source becomes listed or the capability/source-filter gap is recorded |
-| Discovered | Review through target ACP trust surface | Exact diagnostic definition trusted, or trust boundary classified |
-| Trusted | Start new IDEA Custom ACP chat | New ACP process/session identity recorded |
-| Fresh target session | Run transport probe | Invocation and deterministic deny classified |
+| Inactive | Check the configured Custom ACP runtime against C1 | Independent NVM ACP selected |
+| Inactive | Activate exact diagnostic link; approve via documented Codex trust if required | Diagnostic definition ready for fresh IDEA chat |
+| Configured | Start a new IDEA Custom ACP chat | Target shell available for canary |
+| Fresh target session | Run benign and transport-deny canaries | Handler `allow` and executed shell; handler `deny` and blocked shell |
 | Proven transport | Run ENGINE-proxy probe in another fresh target session | Event, ENGINE decision, and host result correlated |
 | Any active diagnostic state | Failure or completion | Remove only the verified exact link |
 | Link absent | Start new target ACP chat and run inactive canary | Normal behavior, no diagnostic record |
@@ -318,7 +316,7 @@ or failed rollback stops the cycle and is recorded before handoff.
 | Order | Transition | Depends on | Provides |
 |---|---|---|---|
 | 1 | [`C1`](#c1-freeze-the-actual-acp-baseline) | reviewed plan and external prerequisites | Verified target identity and reviewed diagnostic package |
-| 2 | [`C2`](#c2-prove-discovery-trust-and-live-acp-transport) | `C1` | Attributed target-ACP lifecycle and transport evidence |
+| 2 | [`C2`](#c2-prove-live-pretooluse-transport-and-denial) | `C1` | Target handler invocation and enforced diagnostic denial |
 | 3 | [`C3`](#c3-trace-the-engine-decision-through-acp) | `C2` proves handler invocation and enforced denial | Correlated ACP event, ENGINE decision, and host outcome |
 | 4 | [`C4`](#c4-classify-the-acp-cause-and-restore-state) | `C3`, or terminal classification from `C2` | ACP-specific handoff and restored inactive state |
 
@@ -383,65 +381,46 @@ State: `[x]`
   `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`,
   and the D1 production definition remained unchanged.
 
-### C2: Prove Discovery, Trust, And Live ACP Transport
+### C2: Prove Live PreToolUse Transport And Denial
 
-State: `[ ]`
+State: `[ ]` (functional evidence obtained; revised acceptance criteria await independent review)
 
-- **Resulting truth:** the target Custom ACP integration's discovery, trust,
-  process/session identity, live handler invocation, actual event shape,
-  diagnostic decision, and host enforcement are separately observed or bounded
-  at the first unavailable layer.
-- **Predecessor:** `C1`.
-- **Work:** install and verify the exact transport definition; start a new IDEA
-  Custom ACP chat; observe target-process provenance and the initialization
-  protocol/capabilities; verify that the negotiated `codexHooks` surface lists
-  the exact user-level definition despite the adapter's `sessionFlags` filter;
-  use only the trust action exposed by IDEA; after exact trust, start another
-  new target chat; run benign and deterministic transport-deny probes from that
-  chat; correlate bounded handler evidence with any ACP hook lifecycle events
-  and the host outcome.
-- **Completion proof:** exact target provenance is established for every live
-  probe and one route is selected: proceed to C3 only after an attributable
-  diagnostic deny is emitted and enforced, or proceed directly to C4 with the
-  smallest discovery, trust, transport, event-shape, or enforcement boundary.
-- **Stop conditions:** wrong host; missing negotiated capability; exact source
-  absent; no authorized target trust path; no handler invocation; invalid
-  documented input; emitted deny not enforced; competing hook/session influence
-  that cannot be isolated; or failed exact-link cleanup.
-- **Completion evidence:** incomplete checkpoint on 2026-11-08. The Windows
-  transport handler initially failed to launch under PowerShell because
-  `commandWindows` began with a quoted executable path. The user reported that
-  removing only those leading executable quotes corrected the launch and that
-  the diagnostic fixture suite then passed all 19 groups. Static repository
-  inspection independently confirms the corresponding uncommitted definition
-  and assertion changes; this checkpoint did not rerun the suite.
+- **Resulting truth:** the user-level diagnostic `PreToolUse` handler executes
+  and enforces a deterministic denial through the configured IDEA Custom ACP.
+- **Predecessor:** C1 identifies the independently installed ACP runtime.
+- **Work:** activate the diagnostic definition; use documented interactive
+  Codex trust controls if needed; start a fresh IDEA Custom ACP chat; submit
+  the exact benign and transport-deny commands using the normal shell tool.
+- **Completion proof:** the benign canary yields handler evidence with
+  `PreToolUse`, `Bash`, `expected-raw`, `allow`, and successful shell execution;
+  the deny canary yields matching `deny` handler evidence with the diagnostic
+  reason and is blocked before shell execution. Correlate the handler record
+  and target IDEA host outcome, using C1 for the independent runtime baseline.
+- **Optional diagnostics, not gates:** per-probe PID, session ID, definition
+  hash, IDEA `codexHooks` negotiation/listing/trust UI, and ACP
+  `hook/started` / `hook/completed` notifications.
+- **Stop conditions:** wrong host, no handler evidence for a known canary,
+  invalid input shape, diagnostic `deny` not enforced, or competing activity
+  making the observed evidence ambiguous.
+- **Completion evidence (2026-11-08):** The diagnostic PowerShell launcher
+  initially failed before Node due to a quoted leading executable path.
+  Removing those quotes from `commandWindows` fixed the launch. The user
+  reported all 19 diagnostic fixture groups passing afterward.
 
-  The exact bundled Codex CLI `0.165.0` was used as a non-target control. The
-  user reports that it discovered, enabled, and trusted the hook, executed the
-  benign canary, and recorded a handler decision class of `allow`. This proves
-  only the bundled CLI control boundary and is not IDEA ACP evidence.
+  Bundled Codex CLI `0.165.0` verified discovery, trust, and benign `allow`
+  only as a lower-layer control. In IDEA Custom ACP, the benign command
+  executed without hook failure, and the user-reported evidence counter rose
+  `2 -> 3` with `PreToolUse`, `Bash`, `expected-raw`, `allow`.
+  The target host reported `diagnostic-transport-deny` and blocked the deny
+  canary before shell execution. Separately supplied handler evidence showed
+  `invocation_count: 1`, `decision_class: deny`,
+  `reason_code: transport-deny`, and matching event/tool/shape classes.
 
-  In the current IDEA Custom ACP conversation, the host outcome for the benign
-  canary was observed directly: the shell tool returned exit code `0` and no
-  hook failure. Separately, the user reports that the bounded handler evidence
-  advanced `invocation_count` from `2` to `3` and recorded
-  `hook_event_name: PreToolUse`, `tool_name: Bash`,
-  `shape_class: expected-raw`, and `decision_class: allow`. For the
-  transport-deny canary, the host directly reported `Command blocked by
-  PreToolUse hook: diagnostic-transport-deny` before shell execution. The user
-  separately reports handler evidence with `invocation_count: 1`, the same
-  event, tool, and shape classes, `decision_class: deny`, and
-  `reason_code: transport-deny`.
-
-  These observations establish handler transport for both branches and host
-  consumption of the diagnostic denial in this conversation. They do not yet
-  satisfy C2's attribution contract. Still missing are exact process/session
-  provenance and active-definition identity for each probe; an IDEA-target
-  observation of negotiated `codexHooks`, exact-source discovery, and the
-  exact-definition trust action (not inferred from invocation or borrowed from
-  the CLI control); and presence or explicit absence of correlated ACP hook
-  lifecycle events. C2 therefore remains open. No ENGINE-proxy probe was run,
-  and production ENGINE enforcement is not verified.
+  These results satisfy the simplified functional criteria, provided no
+  other session used the same canaries concurrently. The evidence values
+  were supplied by the user; they were not independently reread during this
+  documentation revision. Formal C2 completion remains pending independent
+  review of the revised criteria. Do not start C3 before that review.
 
 ### C3: Trace The ENGINE Decision Through ACP
 
@@ -450,10 +429,9 @@ State: `[ ]`
 - **Resulting truth:** the exact ACP-delivered event, unchanged ENGINE result,
   and target host outcome are correlated without modifying ENGINE or retaining
   the command.
-- **Predecessor:** `C2` with attributable diagnostic invocation and enforced
-  deterministic denial.
-- **Work:** activate the exact ENGINE-proxy definition through the target ACP
-  trust lifecycle; start a new IDEA Custom ACP chat; run the harmless
+- **Predecessor:** C2 completed against the reviewed functional criteria.
+- **Work:** activate the exact ENGINE-proxy definition, using documented
+  Codex trust controls if necessary; start a new IDEA Custom ACP chat; run the harmless
   discriminating canary; compare only allowlisted shape and decision metadata
   with the direct fixture result; repeat once in another fresh target session.
 - **Completion proof:** ART-ACP-CAUSE selects exactly one supported layer or
@@ -473,10 +451,8 @@ State: `[ ]`
   sanitized matrix and cause classification; prepare but do not submit an
   issue-ready reproduction if the ACP host or adapter is implicated.
 - **Follow-up routing:** ENGINE incompatibility requires a new DELIVERY Gate and
-  plan; ACP adapter or bundled Codex behavior requires an external issue or an
-  exact-version compatibility decision; missing ACP capability, exact-source
-  exposure, or trust support requires an ACP compatibility or deployment-design
-  revision. This investigation authorizes none of those corrections.
+  plan; demonstrated ACP adapter or bundled Codex execution failures require
+  an external issue or exact-version compatibility decision. Missing IDEA hook
 - **Completion proof:** link absent, transient evidence removed, excluded files
   unchanged, all retained live evidence has target provenance, and every
   conclusion maps to bounded ACP-specific evidence.
@@ -487,13 +463,14 @@ State: `[ ]`
 After every applicable step is complete, with `C3` either complete or explicitly
 not applicable under `C2`'s routing rule:
 
-1. confirm every live probe resolves to the configured NVM Custom ACP chain;
-2. confirm no evidence from standalone CLI or JetBrains-bundled ACP was used;
+1. confirm IDEA canaries used the independently installed NVM Custom ACP
+   based on the C1 runtime baseline;
+2. distinguish bundled CLI controls from IDEA ACP handler and host evidence;
 3. confirm every retained field satisfies ART-ACP-EVIDENCE and the 4 KiB cap;
-4. confirm ART-ACP-CAUSE selects one supported classification or explicitly
-   bounded unresolved ACP layer;
-5. confirm handler records, ACP lifecycle events, and host outcomes were
-   correlated without substituting one evidence source for another;
+4. confirm the functional result through correlated handler records and IDEA
+   host outcomes, or report the remaining functional uncertainty;
+5. treat optional ACP lifecycle and IDEA hook-management UI details only as
+   diagnostic information;
 6. confirm ENGINE, policy, production config, D2, intent, README, ACCEPTANCE,
    IDEA, Custom ACP configuration, Codex configuration, project trust, packages,
    and installations did not change;
@@ -504,10 +481,9 @@ not applicable under `C2`'s routing rule:
 
 #### Final Conformance Evidence
 
-Pending execution. Record exact target-command provenance, versions and hashes,
-sanitized ACP session matrix, discovery and trust observations, handler
-invocation and decision classes, available lifecycle events, host outcomes,
-rollback proof, retained-file inventory, and selected follow-up route.
+Pending execution. Record the C1 independent runtime baseline, bounded IDEA
+handler decisions and host outcomes, C3 ENGINE evidence, rollback proof,
+and retained-file inventory. ACP/UI telemetry is optional.
 
 ## Independent Review Record
 
@@ -539,4 +515,7 @@ Review evidence on 2026-11-08:
 - writable scope, recovery, transition routing, local links, status
   coordination, whitespace, and final-newline checks pass.
 
-Review verdict: `Ready for execution`.
+Original plan review verdict: `Ready for execution`.
+
+Independent review of the revised C2 functional acceptance criteria is
+**pending**; the earlier review does not authorize this revision.
