@@ -44,10 +44,29 @@ Then use a fresh IDEA Custom ACP chat for two shell commands:
 - `Get-Content -Raw -LiteralPath 'AGENTS.md'` should be blocked before
   execution by the bounded-read policy (the file need not exist).
 
-CLI-only hook execution does not prove IDEA enforcement. The older C1–C4
-diagnostics already verified IDEA hook transport and real ENGINE denial
-with a diagnostic proxy; the new portable production launcher still needs
-its first live Windows/IDEA smoke test.
+CLI-only hook execution does not prove IDEA enforcement. Earlier C1–C4
+diagnostics established hook transport and ENGINE enforcement through IDEA.
+
+### Verified on Windows (2026-11-08)
+
+The portable installation was tested using independently installed Node.js
+v25.0.0. The installer succeeded, all three user-level links reported
+`linked`, and the ENGINE and portable installation smoke suite passed
+(67 ENGINE fixture cases).
+
+In a fresh IntelliJ IDEA Custom ACP chat, the **installed production hook**
+produced these outcomes:
+
+- `Write-Output 'ok'` executed normally (exit code `0`).
+- `Get-Content -Raw -LiteralPath 'AGENTS.md'` was blocked before execution:
+  `Complete read of a known high-volume target requires an explicit
+  producer-side range or limit.`
+
+These user-reported host outcomes verify the production allow/deny smoke
+path through IDEA Custom ACP. They do not establish coverage for every
+supported tool shape or policy rule. The uninstall/inactive-state test for
+this portable installation has not yet been run; the previous diagnostic
+installation was separately tested for clean deactivation.
 
 ## Uninstall
 
