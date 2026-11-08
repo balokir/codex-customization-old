@@ -212,6 +212,7 @@ and a reviewed version-bound handoff before activation.
 - `@agentclientprotocol/codex-acp` `2.5.0` and its bundled OpenAI Codex `0.165.0`
   still match the reviewed target identities.
 - The production Windows hook command has been corrected under separate
+  change authority, and its version-bound test handoff reviewed before D2.
 - New IDEA Custom ACP chats can be started after activation-state changes.
 - `C:\nvm4w\nodejs\node.exe` remains the selected independent runtime.
 
@@ -223,6 +224,8 @@ The single authoritative DEPLOYMENT writable boundary is:
 - `C:\work\balokir\codex-customization\hooks\tests\run-tests.mjs`;
 - the exact link `C:\Users\user\.codex\hooks.json`; and
 - the Codex-managed trust record for the exact current hook definition,
+  changed only through documented Codex interactive trust (bundled CLI or
+  supported IDEA UI), never by editing trust data directly.
 
 No other user-managed path under `C:\Users\user\.codex` is writable. No other
 Codex-managed trust or enable state is authorized. DEPLOYMENT must not edit
@@ -255,7 +258,8 @@ trust or host behavior. Commit only owned repository changes; do not push.
 | 2 | [`D2`](#d2-activate-trust-disable-and-restore) | `D1` | Active lifecycle-verified version |
 
 Table order is the reviewed total transition order. D1 is retained as completed;
-D2 is the remaining planned transition, currently blocked by review and
+D2 is the remaining planned transition, currently blocked by review and the
+production launcher prerequisite. Each heading is the canonical state owner.
 
 ### D1: Bind Deployment To The ENGINE Identity
 
@@ -333,7 +337,6 @@ After D2 has been reviewed and completed:
 Pending execution. Record active source identity, trust, runtime, IDEA
 host outcomes, inactive/restore proof and ACCEPTANCE handoff. Capture
 optional protocol telemetry only to diagnose a concrete mismatch.
-
 
 ## Independent Review Record
 
