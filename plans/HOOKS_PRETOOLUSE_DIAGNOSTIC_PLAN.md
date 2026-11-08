@@ -209,7 +209,7 @@ plan below.
 
 ### Plan Core
 
-- **Status:** `Ready for execution`.
+- **Status:** `In execution`.
 - **Permitting result:**
   [`PKG-HOOK-PRETOOLUSE-DIAGNOSTIC-ACP`](#planning-gate-result-pkg-hook-pretooluse-diagnostic-acp),
   `CHARACTERIZATION`.
@@ -408,7 +408,40 @@ State: `[ ]`
   absent; no authorized target trust path; no handler invocation; invalid
   documented input; emitted deny not enforced; competing hook/session influence
   that cannot be isolated; or failed exact-link cleanup.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** incomplete checkpoint on 2026-11-08. The Windows
+  transport handler initially failed to launch under PowerShell because
+  `commandWindows` began with a quoted executable path. The user reported that
+  removing only those leading executable quotes corrected the launch and that
+  the diagnostic fixture suite then passed all 19 groups. Static repository
+  inspection independently confirms the corresponding uncommitted definition
+  and assertion changes; this checkpoint did not rerun the suite.
+
+  The exact bundled Codex CLI `0.165.0` was used as a non-target control. The
+  user reports that it discovered, enabled, and trusted the hook, executed the
+  benign canary, and recorded a handler decision class of `allow`. This proves
+  only the bundled CLI control boundary and is not IDEA ACP evidence.
+
+  In the current IDEA Custom ACP conversation, the host outcome for the benign
+  canary was observed directly: the shell tool returned exit code `0` and no
+  hook failure. Separately, the user reports that the bounded handler evidence
+  advanced `invocation_count` from `2` to `3` and recorded
+  `hook_event_name: PreToolUse`, `tool_name: Bash`,
+  `shape_class: expected-raw`, and `decision_class: allow`. For the
+  transport-deny canary, the host directly reported `Command blocked by
+  PreToolUse hook: diagnostic-transport-deny` before shell execution. The user
+  separately reports handler evidence with `invocation_count: 1`, the same
+  event, tool, and shape classes, `decision_class: deny`, and
+  `reason_code: transport-deny`.
+
+  These observations establish handler transport for both branches and host
+  consumption of the diagnostic denial in this conversation. They do not yet
+  satisfy C2's attribution contract. Still missing are exact process/session
+  provenance and active-definition identity for each probe; an IDEA-target
+  observation of negotiated `codexHooks`, exact-source discovery, and the
+  exact-definition trust action (not inferred from invocation or borrowed from
+  the CLI control); and presence or explicit absence of correlated ACP hook
+  lifecycle events. C2 therefore remains open. No ENGINE-proxy probe was run,
+  and production ENGINE enforcement is not verified.
 
 ### C3: Trace The ENGINE Decision Through ACP
 

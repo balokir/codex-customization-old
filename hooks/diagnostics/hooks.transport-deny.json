@@ -8,7 +8,7 @@
           {
             "type": "command",
             "command": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny --spec \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\probe-spec.json\" --hook-source \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\hooks.transport-deny.json\" --evidence-dir \"C:\\Users\\user\\AppData\\Local\\Temp\\codex-pretooluse-diagnostic-acp-20261108-7c97e4\" --chat-phase c2-trusted-transport",
-            "commandWindows": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny --spec \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\probe-spec.json\" --hook-source \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\hooks.transport-deny.json\" --evidence-dir \"C:\\Users\\user\\AppData\\Local\\Temp\\codex-pretooluse-diagnostic-acp-20261108-7c97e4\" --chat-phase c2-trusted-transport",
+            "": "C:\\nvm4w\\nodejs\\node.exe \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny --spec \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\probe-spec.json\" --hook-source \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\hooks.transport-deny.json\" --evidence-dir \"C:\\Users\\user\\AppData\\Local\\Temp\\codex-pretooluse-diagnostic-acp-20261108-7c97e4\" --chat-phase c2-trusted-transport",
             "timeout": 5,
             "statusMessage": "Checking bounded hook transport"
           }
