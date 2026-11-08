@@ -16,10 +16,15 @@ As of 2026-11-08:
   acceptance criteria. The IDEA ACP benign and diagnostic-deny observations
   prove handler execution and host enforcement; additional internal ACP
   telemetry is not a C2 functional requirement.
-- Independent review re-inspected the exact link read-only and found an active
+- C3 is complete after two separate fresh IDEA Custom ACP sessions exercised
+  the ENGINE proxy. Both invocations reached the unchanged production ENGINE
+  and both resulting denials were enforced before shell execution.
+- During the C2 review, the exact link was re-inspected read-only and found as
+  an active
   `C:\Users\user\.codex\hooks.json` symbolic link to
-  `hooks/diagnostics/hooks.transport-deny.json`. This documentation-only
-  checkpoint did not change the link.
+  `hooks/diagnostics/hooks.transport-deny.json`. C3 later used the ENGINE-proxy
+  definition; this documentation-only checkpoint did not inspect or change the
+  active link.
 - The task-owned evidence directory is
   `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-acp-20261108-7c97e4`.
   Independent C2 review reread both bounded records and confirmed the values
@@ -164,29 +169,42 @@ IDEA capability/trust UI, and ACP lifecycle events were not captured, but are
 optional diagnostic context rather than acceptance requirements. The retained
 handler records do contain session/turn identifiers and the canary-time source
 hash. Independent review found no material contradiction and closed C2.
-Production ENGINE behavior remains untested and belongs to C3.
+Production ENGINE behavior through the diagnostic proxy was subsequently
+verified by C3 as recorded below.
+
+## C3 Evidence Checkpoint
+
+| Boundary | Observation | Evidence classification |
+|---|---|---|
+| Fresh target sessions | The same C3 canary was submitted in two separate fresh IDEA Custom ACP sessions. Both were blocked before shell execution with `Multiple potentially high-volume reads must be split into individually bounded tool calls.` | Confirmed target-host outcomes satisfying the required repetition. |
+| Transparent ENGINE path | The ENGINE proxy invoked the unchanged production `pre_tool_use.mjs`; the diagnostic result was `decision_class: deny` with `reason_code: engine-deny`. | Confirmed production ENGINE decision passed through the diagnostic proxy. |
+| Correlated ACP evidence | After the second invocation, the evidence recorded `invocation_count: 2`, `hook_event_name: PreToolUse`, `tool_name: Bash`, `shape_class: expected-raw`, and `diagnostic_branch: engine-proxy`. | Allowlisted event, shape, branch, and invocation metadata correlate the ENGINE result with both host denials. |
+
+These results satisfy C3's existing completion criteria. The expected ACP event
+and input shape reached the transparent proxy, the production ENGINE emitted a
+valid denial, and IDEA enforced that denial before shell execution in both
+fresh sessions. ART-ACP-CAUSE therefore supports the production ENGINE decision
+path through the target ACP host; it identifies no remaining C3 evidence gap
+and does not require another canary or optional telemetry.
 
 ## Recommended Continuation
 
-1. Do not repeat the completed C2 canaries solely to collect optional telemetry.
-2. In a separately authorized execution session, proceed to the C3
-   ENGINE-proxy test in a fresh IDEA ACP session.
-3. Complete C4 with exact-link removal, inactive-state verification, and
-   cleanup of the task-owned evidence directory.
+1. Do not repeat the completed C2 or C3 canaries solely to collect optional
+   telemetry.
+2. In a separately authorized execution session, complete C4 with exact-link
+   removal, inactive-state verification, and cleanup of the task-owned evidence
+   directory.
 
 ## Safe Continuation Prompt
 
-The independent C2 review is complete. A later execution session may resume at
-C3; this documentation review did not start it:
+The C3 review is complete. A later execution session may resume at C4; this
+documentation review did not start it:
 
 ```text
-Resume plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md at C3. Treat C2 as complete
-from the C1 independent ACP runtime baseline, the retained benign and
-transport-deny handler records, and the corresponding IDEA host outcomes.
-Do not rerun C2 solely for optional process, UI, or lifecycle telemetry.
-Before relying on the transport definition again, account for the tracked empty
-property name recorded in the C2 review; do not silently rewrite diagnostic
-state outside the plan's authority.
+Resume plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md at C4. Treat C1 through C3 as
+complete and do not rerun their canaries solely for optional process, UI, or
+lifecycle telemetry. Complete only the authorized exact-link removal,
+inactive-state verification, classification, and task-owned evidence cleanup.
 ```
 
 ## Independent C2 Review Verdict

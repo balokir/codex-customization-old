@@ -437,7 +437,7 @@ State: `[x]`
 
 ### C3: Trace The ENGINE Decision Through ACP
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** the exact ACP-delivered event, unchanged ENGINE result,
   and target host outcome are correlated without modifying ENGINE or retaining
@@ -449,7 +449,23 @@ State: `[ ]`
   with the direct fixture result; repeat once in another fresh target session.
 - **Completion proof:** ART-ACP-CAUSE selects exactly one supported layer or
   identifies the smallest remaining ACP evidence gap.
-- **Completion evidence:** pending execution.
+- **Completion evidence (2026-11-08):** Two fresh IDEA Custom ACP sessions each
+  submitted the fixed C3 canary through the ENGINE-proxy definition. In both
+  sessions the proxy invoked the unchanged production `pre_tool_use.mjs`, and
+  IDEA blocked the canary before shell execution with
+  `Multiple potentially high-volume reads must be split into individually
+  bounded tool calls.`
+
+  After the second invocation, the bounded diagnostic evidence recorded
+  `invocation_count: 2`, `hook_event_name: PreToolUse`, `tool_name: Bash`,
+  `shape_class: expected-raw`, `diagnostic_branch: engine-proxy`,
+  `decision_class: deny`, and `reason_code: engine-deny`. The two independent
+  target-session outcomes correlate the ACP-delivered event, the transparent
+  production ENGINE denial, and host enforcement without retaining the command.
+  Under ART-ACP-CAUSE, the production ENGINE decision path is supported through
+  the target ACP host: a valid proxy denial was emitted and enforced, leaving no
+  C3 evidence gap. This closes C3 only; C4 cleanup and inactive-state proof
+  remain pending.
 
 ### C4: Classify The ACP Cause And Restore State
 
