@@ -453,6 +453,8 @@ State: `[ ]`
 - **Follow-up routing:** ENGINE incompatibility requires a new DELIVERY Gate and
   plan; demonstrated ACP adapter or bundled Codex execution failures require
   an external issue or exact-version compatibility decision. Missing IDEA hook
+  management UI alone is not a functional failure. This investigation does not
+  authorize those corrections.
 - **Completion proof:** link absent, transient evidence removed, excluded files
   unchanged, all retained live evidence has target provenance, and every
   conclusion maps to bounded ACP-specific evidence.
