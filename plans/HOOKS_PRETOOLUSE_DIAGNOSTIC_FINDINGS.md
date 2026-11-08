@@ -12,25 +12,27 @@ requirements.
 As of 2026-11-08:
 
 - C1 is complete in commit `7c3da29 test(hooks): freeze ACP diagnostic baseline`.
-- C2 remains formally open pending independent review of simplified functional
-  acceptance criteria. The IDEA ACP benign and diagnostic-deny canaries passed;
-  additional internal ACP telemetry is no longer a C2 functional requirement.
-- The last recorded link state was an active
+- C2 is complete after independent review of the simplified functional
+  acceptance criteria. The IDEA ACP benign and diagnostic-deny observations
+  prove handler execution and host enforcement; additional internal ACP
+  telemetry is not a C2 functional requirement.
+- Independent review re-inspected the exact link read-only and found an active
   `C:\Users\user\.codex\hooks.json` symbolic link to
   `hooks/diagnostics/hooks.transport-deny.json`. This documentation-only
-  checkpoint did not re-inspect or change the link, so it does not restate that
-  earlier observation as current fact.
+  checkpoint did not change the link.
 - The task-owned evidence directory is
   `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-acp-20261108-7c97e4`.
-  The user supplied the bounded evidence values recorded below; the files were
-  not independently reread during this documentation update.
-- The current conversation supplied direct host outcomes, but its exact
-  process/session provenance and active-definition hash were not captured for
-  the probes. The earlier fresh-session ID
-  `01a1ba90-3f53-7933-8c69-f4df7b638149` is not silently attributed to them.
-- An earlier checkpoint recorded uncommitted command-launch and fixture
-  corrections. Both corrections are present in the pushed `feature/hooks`
-  branch; this revision does not inspect the local worktree.
+  Independent C2 review reread both bounded records and confirmed the values
+  recorded below.
+- The current conversation supplied direct host outcomes. The retained handler
+  records include one C2 session ID, distinct turn IDs, and the canary-time
+  definition hash; per-canary process provenance was not captured. The earlier
+  fresh-session ID `01a1ba90-3f53-7933-8c69-f4df7b638149` is not silently
+  attributed to them.
+- The retained records identify the corrected canary-time transport definition
+  by source hash. A later commit accidentally replaced the `commandWindows`
+  property name with an empty key; that current tracked defect is distinct from
+  and later than the completed C2 observations.
 
 When present, the diagnostic link is intentional but transient. It must be
 removed on a terminal C2 route, failure, or final C4 cleanup. An empty evidence
@@ -70,7 +72,7 @@ The adapter inspection established that:
 |---|---|---|---|
 | P1 | The first diagnostic run used the global standalone Codex CLI `0.159.0`. | Its results were incorrectly attributed to IDEA Custom ACP. | Invalidated the wrong-host verdict; functional C2 relies on C1's independent runtime baseline and direct IDEA evidence. |
 | P2 | Existing diagnostic assets still encoded CLI `0.159.0`, `codex exec`, environment-injected metadata, and terminal-session assumptions. | They could not produce attributable IDEA ACP evidence and could retain the wrong identity fields. | C1 replaced these assumptions with exact ACP identities, explicit fresh-chat phases, a fixed probe specification, bounded evidence paths, and reviewed handler arguments. |
-| P3 | Matching package versions existed in both the configured NVM installation and JetBrains' separate bundled installation. | Version matching alone could misattribute a probe to the wrong process chain. | Require path, PID, parent PID, start time, shim hash, adapter entry hash, and bundled Codex hash for each live session. |
+| P3 | Matching package versions existed in both the configured NVM installation and JetBrains' separate bundled installation. | Version matching alone could misattribute a probe to the wrong process chain. | C1 fixed the configured NVM runtime chain and live provenance. Per-canary process identity remains useful when investigating ambiguity, but revised functional C2 may use that baseline with matching handler and host evidence when no concrete wrong-host contradiction exists. |
 | P4 | Internal discovery, trust, and invocation were treated as a single acceptance target. | Mandatory ACP telemetry obscured the functional allow/deny test. | Correlate handler evidence with target IDEA host outcomes; treat UI and lifecycle events as optional diagnostics. |
 | P5 | The adapter's `sessionFlags` filter may hide a valid user-level hook from IDEA management UI. | Listing can be unavailable while Codex still enforces hooks. | IDEA hook-management listing is not a C2 gate when handler invocation and enforcement are confirmed. |
 | P6 | `computer-use` was selected to automate IDEA AI Chat. Its mandatory safety rules prohibit automating Codex extensions inside Windows applications. | The continuation agent repeatedly tried to solve an impossible UI-automation task and entered a loop before producing probe evidence. | Do not invoke `computer-use` or CUA for C2. The user opens the required IDEA chats manually. If a trust or discovery observation requires UI, the agent asks one concrete manual question and waits; it does not retry through automation. |
@@ -81,7 +83,7 @@ The adapter inspection established that:
 | P11 | Running `/hooks` in bundled CLI may update shared Codex trust state. | The earlier C2 gate required trust specifically via IDEA. | Bundled CLI trust is consistent with independent Codex management; IDEA canaries separately prove target execution and enforcement. |
 | P12 | The plan excludes a different ACP harness as target proof. | A headless harness could make the adapter appear healthy while bypassing the exact IDEA behavior under investigation. | A harness may be authorized later as a control, but its client capabilities, trust interactions, lifecycle events, and decision consumption must be classified separately from IDEA. Do not call `_codex/hooks/list` or `_codex/hooks/trust` out of band and label the result as IDEA evidence. |
 | P13 | The active diagnostic link can outlive an interrupted investigation. | Later Codex sessions could discover the diagnostic definition unexpectedly, and the repository could appear clean while user-level state remains active. | Treat user-level link state and the task-owned temp directory as part of every checkpoint. Remove only the verified exact link on a terminal route or cleanup; never overwrite or delete an unexpected object. |
-| P14 | The transport handler's Windows command began with a quoted executable path. | PowerShell failed before the diagnostic handler could run, so a launch failure could be mistaken for missing hook transport. | The user reports that removing only the leading executable quotes from `commandWindows` corrected the launch. Static inspection confirms the pending definition and fixture-assertion changes, and the user reports all 19 diagnostic fixture groups passing afterward. |
+| P14 | The transport handler's Windows command began with a quoted executable path. | PowerShell failed before the diagnostic handler could run, so a launch failure could be mistaken for missing hook transport. | Removing only the leading executable quotes from `commandWindows` corrected the launch. The retained C2 records cite the SHA-256 of that correct canary-time definition. Commit `cb77d22` later recorded an empty property name instead of `commandWindows`; this does not invalidate the earlier evidence but remains a tracked-definition defect outside this documentation-only review. |
 | P15 | Host outcomes and handler records were observed through separate channels. | Either alone could overstate functional success. | Preserve both evidence classes and correlate them; missing optional capabilities, trust UI, and lifecycle events are not functional C2 failures. |
 
 ## Corrections Completed in C1
@@ -148,45 +150,55 @@ forwarding, or IDEA decision consumption.
 | Boundary | Observation | Evidence classification |
 |---|---|---|
 | Independently verified runtime baseline | C1 fixed `codex-acp 2.5.0`, bundled Codex `0.165.0`, and the configured NVM command chain. The tracked C1 record reports 19 diagnostic fixture groups passing. | Repository-authoritative C1 evidence; the suite was not rerun during this documentation update. |
-| Windows handler launch | `commandWindows` no longer begins with executable quotes for the transport definition, and the fixture assertion matches that form. | Independently inspected pending worktree state. The correction of the live PowerShell failure and the post-change 19-group pass are user-reported outcomes. |
+| Windows handler launch | The retained records cite source SHA-256 `ab3b59c5fc64d9c16da3a5070440dd52b6f99f0a7ab0b7dc2032a7f76697006d`, which matches the transport definition with a named `commandWindows` property and an unquoted leading executable. | Independently verified against the retained records and reconstructed canary-time definition. The current tracked file instead has an empty property name and a different hash. |
 | Bundled CLI control | Hook discovered, enabled, and trusted; benign command executed; handler classified `allow`. | User-reported control outcome and handler evidence. Not target IDEA ACP evidence. |
 | IDEA ACP benign host outcome | The normal shell tool returned exit code `0` with no hook-failure message. | Directly observed host outcome in the current conversation. It proves execution, not handler invocation by itself. |
-| IDEA ACP benign handler evidence | `invocation_count` increased `2 -> 3`; `PreToolUse`; `Bash`; `expected-raw`; `allow`. | User-reported bounded evidence-file transcription. The file was not reread for this update. |
+| IDEA ACP benign handler evidence | `invocation_count` increased `2 -> 3`; `PreToolUse`; `Bash`; `expected-raw`; `allow`. | Independently reread from the retained 1,282-byte bounded record. |
 | IDEA ACP deny host outcome | The host reported `Command blocked by PreToolUse hook: diagnostic-transport-deny` and did not execute the shell command. | Directly observed host outcome in the current conversation. |
-| IDEA ACP deny handler evidence | `invocation_count: 1`; `PreToolUse`; `Bash`; `expected-raw`; `deny`; `reason_code: transport-deny`. | User-reported bounded evidence-file transcription. The file was not reread for this update. |
+| IDEA ACP deny handler evidence | `invocation_count: 1`; `PreToolUse`; `Bash`; `expected-raw`; `deny`; `reason_code: transport-deny`. | Independently reread from the retained 1,366-byte bounded record. |
 
 Together, the IDEA observations meet the simplified functional C2 criteria:
 the independent ACP baseline, handler `allow`, and handler `deny` enforced
-by the target IDEA host. The exact per-canary process/session identity,
-definition hashes, IDEA capability/trust UI, and ACP lifecycle events were
-not captured, but are optional diagnostic context rather than acceptance
-requirements. Production ENGINE behavior remains untested; independent
-review of the new gate is still required before marking C2 complete.
+by the target IDEA host. The exact per-canary process identity,
+IDEA capability/trust UI, and ACP lifecycle events were not captured, but are
+optional diagnostic context rather than acceptance requirements. The retained
+handler records do contain session/turn identifiers and the canary-time source
+hash. Independent review found no material contradiction and closed C2.
+Production ENGINE behavior remains untested and belongs to C3.
 
 ## Recommended Continuation
 
-1. Obtain independent review of the simplified C2 functional criteria;
-   do not repeat successful canaries solely to collect optional telemetry.
-2. If the review approves the revised criteria, mark C2 complete using
-   the existing IDEA benign and diagnostic-deny observations.
-3. Proceed to the C3 ENGINE-proxy test in a fresh IDEA ACP session.
-4. Complete C4 with exact-link removal, inactive-state verification, and
+1. Do not repeat the completed C2 canaries solely to collect optional telemetry.
+2. In a separately authorized execution session, proceed to the C3
+   ENGINE-proxy test in a fresh IDEA ACP session.
+3. Complete C4 with exact-link removal, inactive-state verification, and
    cleanup of the task-owned evidence directory.
 
 ## Safe Continuation Prompt
 
-The next operation is an independent review, not another live probe:
+The independent C2 review is complete. A later execution session may resume at
+C3; this documentation review did not start it:
 
 ```text
-Review the simplified C2 acceptance criteria in
-plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md against the recorded IDEA
-benign and transport-deny evidence. Determine whether the independent ACP
-runtime baseline, handler invocation, and host enforcement sufficiently
-demonstrate the original integration objective. IDEA management UI,
-per-canary PIDs, and ACP lifecycle events are optional diagnostics.
-Do not rerun canaries, start C3/C4, or modify hook definitions or trust.
-Report substantive contradictions before closing C2.
+Resume plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md at C3. Treat C2 as complete
+from the C1 independent ACP runtime baseline, the retained benign and
+transport-deny handler records, and the corresponding IDEA host outcomes.
+Do not rerun C2 solely for optional process, UI, or lifecycle telemetry.
+Before relying on the transport definition again, account for the tracked empty
+property name recorded in the C2 review; do not silently rewrite diagnostic
+state outside the plan's authority.
 ```
+
+## Independent C2 Review Verdict
+
+Review completed on 2026-11-08 with verdict: **C2 complete**. The revised
+criteria preserve the original functional objective and the existing evidence
+satisfies them. The benign record proves handler invocation and `allow` while
+IDEA executed the shell; the transport record proves handler `deny` with
+`transport-deny` while IDEA blocked the shell. C1 supplies the independently
+installed ACP runtime baseline. Missing per-canary process IDs, IDEA hook
+management or trust UI observations, and ACP lifecycle notifications create no
+contradiction affecting this functional acceptance.
 
 ## Evidence Interpretation Rules
 

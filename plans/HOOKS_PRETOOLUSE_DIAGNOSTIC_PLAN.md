@@ -383,7 +383,7 @@ State: `[x]`
 
 ### C2: Prove Live PreToolUse Transport And Denial
 
-State: `[ ]` (functional evidence obtained; revised acceptance criteria await independent review)
+State: `[x]`
 
 - **Resulting truth:** the user-level diagnostic `PreToolUse` handler executes
   and enforces a deterministic denial through the configured IDEA Custom ACP.
@@ -416,11 +416,24 @@ State: `[ ]` (functional evidence obtained; revised acceptance criteria await in
   `invocation_count: 1`, `decision_class: deny`,
   `reason_code: transport-deny`, and matching event/tool/shape classes.
 
-  These results satisfy the simplified functional criteria, provided no
-  other session used the same canaries concurrently. The evidence values
-  were supplied by the user; they were not independently reread during this
-  documentation revision. Formal C2 completion remains pending independent
-  review of the revised criteria. Do not start C3 before that review.
+  Independent review on 2026-11-08 reread both retained evidence records.
+  Each is below the 4 KiB cap, matches the fixed probe identifier, command
+  length, and command hash in `probe-spec.json`, and records the same target
+  C2 ACP session. The benign record contains `PreToolUse`, `Bash`,
+  `expected-raw`, and `allow`; the transport record contains the matching
+  event/tool/shape classes, `deny`, and `transport-deny`. Correlated with the
+  observed IDEA execution and block outcomes and the C1 independent runtime
+  baseline, these observations satisfy the revised C2 criteria. No recorded
+  competing use or other material attribution contradiction was found.
+
+  The retained records cite hook-source SHA-256
+  `ab3b59c5fc64d9c16da3a5070440dd52b6f99f0a7ab0b7dc2032a7f76697006d`,
+  which matches the canary-time transport definition with the corrected
+  `commandWindows` executable form. The later committed transport definition
+  has an empty property name in place of `commandWindows` and therefore a
+  different hash. That post-observation repository defect does not invalidate
+  the completed functional proof, but this documentation-only review does not
+  correct or authorize reliance on the malformed current definition.
 
 ### C3: Trace The ENGINE Decision Through ACP
 
@@ -503,9 +516,10 @@ Review evidence on 2026-11-08:
 - bounded adapter inspection confirmed the ACP-v1-only `codexHooks` capability,
   `_codex/hooks/list`, `_codex/hooks/trust`, and `sessionFlags` source filter;
 - a sanitized process check found configured-NVM and JetBrains-runtime
-  `codex-acp` processes alive concurrently, confirming that every live probe
-  needs the plan's PID, parent PID, start-time, path, and fresh-session
-  attribution rather than version matching alone;
+  `codex-acp` processes alive concurrently, confirming that version matching
+  alone is insufficient and motivating the C1 runtime baseline; under the
+  revised C2 criteria, per-canary process attribution is optional when matching
+  handler and host evidence presents no concrete wrong-host contradiction;
 - the official hooks and App Server contracts do not claim that IDEA negotiated
   or exposed those adapter facilities;
 - the existing diagnostic definitions, probe specification, handler fields, and
@@ -519,5 +533,12 @@ Review evidence on 2026-11-08:
 
 Original plan review verdict: `Ready for execution`.
 
-Independent review of the revised C2 functional acceptance criteria is
-**pending**; the earlier review does not authorize this revision.
+Independent review of the revised C2 functional acceptance criteria completed
+on 2026-11-08 with verdict: **C2 complete**. The C1 independent runtime
+baseline plus the retained benign and transport-deny handler records and the
+corresponding IDEA host outcomes directly demonstrate that independently
+installed Codex ACP executes and enforces the user-level `PreToolUse` hook.
+Per-canary process identities, IDEA hook-management capability negotiation or
+trust UI, and ACP lifecycle notifications are not needed for that functional
+conclusion, and their absence creates no concrete contradiction in the recorded
+evidence. This review does not begin or complete C3 or C4.
