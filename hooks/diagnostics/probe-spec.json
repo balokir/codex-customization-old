@@ -1,7 +1,17 @@
 {
-  "cliVersion": "0.159.0",
+  "targetAcp": {
+    "configuredCommand": "C:\\nvm4w\\nodejs\\codex-acp.cmd",
+    "configuredCommandSha256": "333a7c36daf9e73d55f123d36af6a46d2ed2dd5a14a9894f0f525b09f4c4a039",
+    "adapterVersion": "2.5.0",
+    "entryModuleSha256": "15de6b2dd5203876a48b12861378bcf87040d623ab2159e05052dc9d54c32b16",
+    "bundledCodexVersion": "0.165.0",
+    "bundledCodexSha256": "d4b2e6a054ea1dfe53217f9d8942c5f8a9f4b76171a1e0bb76ced5759915300a"
+  },
   "independentRuntime": "C:\\nvm4w\\nodejs\\node.exe",
+  "evidenceDirectory": "C:\\Users\\user\\AppData\\Local\\Temp\\codex-pretooluse-diagnostic-acp-20261108-7c97e4",
   "matcher": "^Bash$",
+  "synchronous": true,
+  "timeoutSeconds": 5,
   "evidenceLimitBytes": 4096,
   "probes": {
     "benign": {
@@ -16,26 +26,46 @@
     },
     "engineProxy": {
       "probeId": "cptd-engine-20261108-bd8741",
-      "commandLength": 187,
-      "commandSha256": "d40a6c049ad1da8e8df05c410c0f4291d0b6232a95cd523757f96ab2bbe81f39"
+      "commandLength": 226,
+      "commandSha256": "951fc18b530db6108269071da3a6ed2d1f328c91046d524dd83c056ad1073515"
     }
   },
-  "sessionModes": [
+  "freshChatPhases": [
     {
-      "label": "exec-default-fresh",
-      "kind": "noninteractive",
-      "ephemeral": false
+      "label": "c1-inactive-control",
+      "activationState": "inactive",
+      "purpose": "target-provenance",
+      "requiresFreshChat": false
     },
     {
-      "label": "exec-ephemeral-fresh",
-      "kind": "noninteractive",
-      "ephemeral": true
+      "label": "c2-linked-discovery",
+      "activationState": "linked-untrusted",
+      "purpose": "capability-discovery",
+      "requiresFreshChat": true
     },
     {
-      "label": "interactive-fresh",
-      "kind": "interactive",
-      "ephemeral": false,
-      "skipIfProjectTrustMutationRequired": true
+      "label": "c2-trusted-transport",
+      "activationState": "linked-trusted-transport",
+      "purpose": "transport-probes",
+      "requiresFreshChat": true
+    },
+    {
+      "label": "c3-trusted-engine-first",
+      "activationState": "linked-trusted-engine-proxy",
+      "purpose": "engine-proxy-first",
+      "requiresFreshChat": true
+    },
+    {
+      "label": "c3-trusted-engine-repeat",
+      "activationState": "linked-trusted-engine-proxy",
+      "purpose": "engine-proxy-repeat",
+      "requiresFreshChat": true
+    },
+    {
+      "label": "c4-inactive-rollback",
+      "activationState": "inactive",
+      "purpose": "rollback-canary",
+      "requiresFreshChat": true
     }
   ]
 }

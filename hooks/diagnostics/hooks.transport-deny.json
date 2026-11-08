@@ -1,5 +1,5 @@
 {
-  "description": "Bounded PreToolUse transport diagnostic for Codex CLI 0.159.0.",
+  "description": "Bounded PreToolUse transport diagnostic for IDEA Custom ACP 2.5.0 with bundled Codex 0.165.0.",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,8 +7,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny",
-            "commandWindows": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny",
+            "command": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny --spec \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\probe-spec.json\" --hook-source \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\hooks.transport-deny.json\" --evidence-dir \"C:\\Users\\user\\AppData\\Local\\Temp\\codex-pretooluse-diagnostic-acp-20261108-7c97e4\" --chat-phase c2-trusted-transport",
+            "commandWindows": "\"C:\\nvm4w\\nodejs\\node.exe\" \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\pre_tool_use_diagnostic.mjs\" --branch transport-deny --spec \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\probe-spec.json\" --hook-source \"C:\\work\\balokir\\codex-customization\\hooks\\diagnostics\\hooks.transport-deny.json\" --evidence-dir \"C:\\Users\\user\\AppData\\Local\\Temp\\codex-pretooluse-diagnostic-acp-20261108-7c97e4\" --chat-phase c2-trusted-transport",
             "timeout": 5,
             "statusMessage": "Checking bounded hook transport"
           }

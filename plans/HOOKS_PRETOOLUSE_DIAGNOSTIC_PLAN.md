@@ -324,7 +324,7 @@ or failed rollback stops the cycle and is recorded before handoff.
 
 ### C1: Freeze The Actual ACP Baseline
 
-State: `[ ]`
+State: `[x]`
 
 - **Resulting truth:** the exact IDEA Custom ACP command chain, live process
   provenance, versions, hashes, source state, canaries, and diagnostic assets
@@ -341,7 +341,47 @@ State: `[ ]`
   chat has target provenance; fixtures cover supported and malformed events,
   both handler branches, ENGINE pass-through, decision shapes, evidence
   allowlisting, the 4 KiB cap, confidentiality, and cleanup without live hooks.
-- **Completion evidence:** pending execution.
+- **Completion evidence:** completed on 2026-11-08 without installing the user
+  activation link. `C:\nvm4w\nodejs` still resolves to NVM Node `v25.0.0`;
+  `codex-acp.cmd` reports adapter `2.5.0` and retains SHA-256
+  `333a7c36daf9e73d55f123d36af6a46d2ed2dd5a14a9894f0f525b09f4c4a039`;
+  the ACP entry retains SHA-256
+  `15de6b2dd5203876a48b12861378bcf87040d623ab2159e05052dc9d54c32b16`;
+  and the bundled `codex.exe` reports `0.165.0` with SHA-256
+  `d4b2e6a054ea1dfe53217f9d8942c5f8a9f4b76171a1e0bb76ced5759915300a`.
+  The control chat was attributed from IDEA PID `57128` through `cmd.exe` to
+  configured-NVM ACP PID `39836` (started
+  `2026-11-08T12:29:35.8008450+03:00`), NVM Codex launcher PID `49216`, and
+  the configured package's bundled Codex PID `32884`; no standalone or
+  JetBrains-bundled process supplied control evidence.
+
+  The official Hooks, Codex IDE, and App Server documentation was rechecked on
+  2026-11-08 with no material drift from the reviewed contract: unified exec
+  matches `Bash`, `tool_input.command` carries the shell input, the documented
+  deny shape is unchanged, and synchronous App Server hooks expose
+  `hook/started` and `hook/completed`. Bounded installed-adapter inspection
+  reconfirmed ACP-v1-only AIR `codexHooks`, `_codex/hooks/list`,
+  `_codex/hooks/trust`, and the `sessionFlags` source filter.
+
+  The diagnostic definitions, spec, handler evidence, and fixtures now bind
+  the configured ACP identities and fresh IDEA chat phases rather than CLI
+  `0.159.0`, `codex exec`, environment-injected probe metadata, or terminal
+  session modes. The live definitions carry the exact spec, source, bounded
+  task-owned temp destination, and phase arguments; unknown Bash commands are
+  not retained. Fixtures proved supported and malformed envelopes, both
+  handler branches, known-canary-only command hashing, fixed allowlisted
+  evidence under 4 KiB, confidentiality, invocation counting, deterministic
+  denial, exact ENGINE stdin/stdout/stderr/exit preservation, and cleanup.
+  `C:\nvm4w\nodejs\node.exe .\hooks\tests\diagnostics\run-tests.mjs`
+  reported `C1: 19 ACP diagnostic fixture groups passed`; the complete existing
+  suite reported
+  `E1/E2/E3: 67 fixture cases passed; D1: 8 deployment fixture cases passed`.
+  The exact user link and the reserved evidence directory remained absent;
+  ENGINE script SHA-256
+  `0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3`,
+  policy SHA-256
+  `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`,
+  and the D1 production definition remained unchanged.
 
 ### C2: Prove Discovery, Trust, And Live ACP Transport
 

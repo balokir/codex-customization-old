@@ -3,9 +3,10 @@ import { createHash } from "node:crypto";
 import {
   existsSync,
   readFileSync,
+  realpathSync,
   writeFileSync,
 } from "node:fs";
-import { isAbsolute, join, relative, resolve } from "node:path";
+import { isAbsolute, join, relative } from "node:path";
 import { tmpdir } from "node:os";
 
 const EVIDENCE_LIMIT_BYTES = 4096;
@@ -37,6 +38,12 @@ function safeSha256(value) {
     : null;
 }
 
+function safeCorrelationId(value) {
+  return typeof value === "string" && /^[A-Za-z0-9._:-]{1,160}$/u.test(value)
+    ? value
+    : null;
+}
+
 function boundedKeys(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     return [];
@@ -49,6 +56,33 @@ function boundedKeys(value) {
 
 function sha256Text(value) {
   return createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+function sha256File(path) {
+  return typeof path === "string" && isAbsolute(path) && existsSync(path)
+    ? createHash("sha256").update(readFileSync(path)).digest("hex")
+    : null;
+}
+
+function readSpec(path) {
+  if (typeof path !== "string" || !isAbsolute(path) || !existsSync(path)) return null;
+  try {
+    const parsed = JSON.parse(readFileSync(path, "utf8"));
+    const target = parsed?.targetAcp;
+    const valid = target !== null && typeof target === "object"
+      && typeof target.configuredCommand === "string"
+      && safeSha256(target.configuredCommandSha256) !== null
+      && safeLabel(target.adapterVersion, null) !== null
+      && safeSha256(target.entryModuleSha256) !== null
+      && safeLabel(target.bundledCodexVersion, null) !== null
+      && safeSha256(target.bundledCodexSha256) !== null
+      && safeSha256(parsed?.probes?.benign?.commandSha256) !== null
+      && safeSha256(parsed?.probes?.transportDeny?.commandSha256) !== null
+      && safeSha256(parsed?.probes?.engineProxy?.commandSha256) !== null;
+    return valid ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 function normalizedEventName(envelope) {
@@ -69,7 +103,7 @@ function normalizedToolName(envelope) {
   return envelope.tool_name === "Bash" ? "Bash" : "other";
 }
 
-function classifyCommand(envelope, expectedSha256) {
+function classifyCommand(envelope, expectedSha256s) {
   const toolInput = envelope !== null && typeof envelope === "object"
     && !Array.isArray(envelope)
     ? envelope.tool_input
@@ -93,7 +127,7 @@ function classifyCommand(envelope, expectedSha256) {
   }
 
   const commandSha256 = sha256Text(toolInput.command);
-  if (expectedSha256 !== null && commandSha256 === expectedSha256) {
+  if (expectedSha256s.includes(commandSha256)) {
     return {
       commandType: "string",
       commandLength: toolInput.command.length,
@@ -149,28 +183,48 @@ function outputMetadata(stdout) {
   return { topLevelKeys, hookSpecificKeys, decisionClass };
 }
 
-function evidenceDirectory() {
-  const configured = process.env.CODEX_HOOK_DIAGNOSTIC_EVIDENCE_DIR;
+function evidenceDirectory(configured) {
   if (typeof configured !== "string" || configured.length === 0) return null;
-  const resolvedDirectory = resolve(configured);
-  const resolvedTemp = resolve(tmpdir());
+  if (!existsSync(configured)) return null;
+  const resolvedDirectory = realpathSync(configured);
+  const resolvedTemp = realpathSync(tmpdir());
   const fromTemp = relative(resolvedTemp, resolvedDirectory);
   if (fromTemp === "" || fromTemp.startsWith("..") || isAbsolute(fromTemp)) return null;
-  return existsSync(resolvedDirectory) ? resolvedDirectory : null;
+  return resolvedDirectory;
 }
 
-function baseEvidence(envelope, branch, command, output, reasonCode, exitCode) {
+function baseEvidence(
+  envelope,
+  branch,
+  command,
+  output,
+  reasonCode,
+  exitCode,
+  probeId,
+  spec,
+  hookSourceSha256,
+  chatPhase,
+) {
   const toolInput = envelope !== null && typeof envelope === "object"
     && !Array.isArray(envelope)
     ? envelope.tool_input
     : undefined;
   return {
-    probe_id: safeLabel(process.env.CODEX_HOOK_DIAGNOSTIC_PROBE_ID, "invalid-probe"),
-    cli_version: safeLabel(process.env.CODEX_HOOK_DIAGNOSTIC_CLI_VERSION, "unknown"),
-    session_mode: safeLabel(process.env.CODEX_HOOK_DIAGNOSTIC_SESSION_MODE, "unknown"),
-    hook_source_sha256: safeSha256(process.env.CODEX_HOOK_DIAGNOSTIC_HOOK_SHA256),
+    probe_id: probeId,
+    configured_acp_command: spec.targetAcp.configuredCommand,
+    configured_acp_command_sha256: spec.targetAcp.configuredCommandSha256,
+    adapter_version: spec.targetAcp.adapterVersion,
+    acp_entry_sha256: spec.targetAcp.entryModuleSha256,
+    bundled_codex_version: spec.targetAcp.bundledCodexVersion,
+    bundled_codex_sha256: spec.targetAcp.bundledCodexSha256,
+    chat_phase: safeLabel(chatPhase, "unknown"),
+    acp_session_id: safeCorrelationId(envelope?.session_id),
+    acp_turn_id: safeCorrelationId(envelope?.turn_id),
+    hook_source_sha256: hookSourceSha256,
     matcher: MATCHER,
-    trust_class: safeLabel(process.env.CODEX_HOOK_DIAGNOSTIC_TRUST_CLASS, "unknown"),
+    synchronous: true,
+    timeout_seconds: 5,
+    trust_class: "runtime-unobserved",
     invocation_count: 1,
     hook_event_name: normalizedEventName(envelope),
     tool_name: normalizedToolName(envelope),
@@ -193,12 +247,10 @@ function baseEvidence(envelope, branch, command, output, reasonCode, exitCode) {
   };
 }
 
-function writeEvidence(record) {
-  const directory = evidenceDirectory();
+function writeEvidence(record, configuredDirectory) {
+  const directory = evidenceDirectory(configuredDirectory);
   if (directory === null) return;
-  const probeId = record.probe_id;
-  if (probeId === "invalid-probe") return;
-  const path = join(directory, `${probeId}.json`);
+  const path = join(directory, `${record.probe_id}.json`);
   if (existsSync(path)) {
     try {
       const previous = JSON.parse(readFileSync(path, "utf8"));
@@ -216,9 +268,9 @@ function writeEvidence(record) {
   writeFileSync(path, serialized, { encoding: "utf8", flag: "w" });
 }
 
-function tryWriteEvidence(record) {
+function tryWriteEvidence(record, configuredDirectory) {
   try {
-    writeEvidence(record);
+    writeEvidence(record, configuredDirectory);
   } catch {
     // Evidence failures must not change the handler or proxied ENGINE result.
   }
@@ -233,37 +285,78 @@ function readEnvelope(rawInput) {
 }
 
 function parseArguments(argv) {
-  const result = { branch: null, engine: null };
+  const result = {
+    branch: null,
+    engine: null,
+    spec: null,
+    hookSource: null,
+    evidenceDir: null,
+    chatPhase: null,
+    probeId: null,
+  };
+  const options = new Map([
+    ["--branch", "branch"],
+    ["--engine", "engine"],
+    ["--spec", "spec"],
+    ["--hook-source", "hookSource"],
+    ["--evidence-dir", "evidenceDir"],
+    ["--chat-phase", "chatPhase"],
+    ["--probe-id", "probeId"],
+  ]);
   for (let index = 0; index < argv.length; index += 1) {
-    if (argv[index] === "--branch") result.branch = argv[index + 1] ?? null;
-    if (argv[index] === "--engine") result.engine = argv[index + 1] ?? null;
+    const property = options.get(argv[index]);
+    if (property !== undefined) result[property] = argv[index + 1] ?? null;
   }
   return result;
 }
 
-function runTransport(rawInput, envelope) {
-  const expectedSha256 = safeSha256(process.env.CODEX_HOOK_DIAGNOSTIC_EXPECTED_SHA256);
-  const command = classifyCommand(envelope, expectedSha256);
+function selectedTransportProbe(command, spec, fixtureProbeId) {
+  const fixture = safeLabel(fixtureProbeId, null);
+  if (fixture !== null) return fixture;
+  if (command.commandSha256 === spec.probes.transportDeny.commandSha256) {
+    return spec.probes.transportDeny.probeId;
+  }
+  if (command.commandSha256 === spec.probes.benign.commandSha256) {
+    return spec.probes.benign.probeId;
+  }
+  return null;
+}
+
+function runTransport(rawInput, envelope, args, spec) {
+  if (spec === null) return;
+  const expectedSha256s = [
+    spec.probes.benign.commandSha256,
+    spec.probes.transportDeny.commandSha256,
+  ];
+  const command = classifyCommand(envelope, expectedSha256s);
   const shouldDeny = normalizedEventName(envelope) === "PreToolUse"
     && normalizedToolName(envelope) === "Bash"
-    && command.shapeClass === "expected-raw";
+    && command.commandSha256 === spec.probes.transportDeny.commandSha256;
   const stdout = shouldDeny ? Buffer.from(`${JSON.stringify(DENY_OUTPUT)}\n`, "utf8") : Buffer.alloc(0);
   const output = outputMetadata(stdout);
-  const evidence = baseEvidence(
-    envelope,
-    "transport-deny",
-    command,
-    output,
-    shouldDeny ? "transport-deny" : "transport-allow",
-    0,
-  );
-  tryWriteEvidence(evidence);
+  const probeId = selectedTransportProbe(command, spec, args.probeId);
+  if (probeId !== null) {
+    const evidence = baseEvidence(
+      envelope,
+      "transport-deny",
+      command,
+      output,
+      shouldDeny ? "transport-deny" : "transport-allow",
+      0,
+      probeId,
+      spec,
+      sha256File(args.hookSource),
+      args.chatPhase,
+    );
+    tryWriteEvidence(evidence, args.evidenceDir);
+  }
   if (stdout.length > 0) process.stdout.write(stdout);
 }
 
-function runEngineProxy(rawInput, envelope, enginePath) {
-  const expectedSha256 = safeSha256(process.env.CODEX_HOOK_DIAGNOSTIC_EXPECTED_SHA256);
-  const command = classifyCommand(envelope, expectedSha256);
+function runEngineProxy(rawInput, envelope, args, spec) {
+  const expectedSha256s = spec === null ? [] : [spec.probes.engineProxy.commandSha256];
+  const command = classifyCommand(envelope, expectedSha256s);
+  const enginePath = args.engine;
   const result = typeof enginePath === "string" && isAbsolute(enginePath)
     ? spawnSync(process.execPath, [enginePath], {
         input: rawInput,
@@ -285,15 +378,29 @@ function runEngineProxy(rawInput, envelope, enginePath) {
         : output.decisionClass === "allow"
           ? "engine-allow"
           : "engine-other";
-  const evidence = baseEvidence(
-    envelope,
-    "engine-proxy",
-    command,
-    output,
-    reasonCode,
-    exitCode,
-  );
-  tryWriteEvidence(evidence);
+  const fixtureProbeId = safeLabel(args.probeId, null);
+  const probeId = spec === null
+    ? null
+    : fixtureProbeId !== null
+      ? fixtureProbeId
+      : command.commandSha256 === spec.probes.engineProxy.commandSha256
+      ? spec.probes.engineProxy.probeId
+      : null;
+  if (probeId !== null) {
+    const evidence = baseEvidence(
+      envelope,
+      "engine-proxy",
+      command,
+      output,
+      reasonCode,
+      exitCode,
+      probeId,
+      spec,
+      sha256File(args.hookSource),
+      args.chatPhase,
+    );
+    tryWriteEvidence(evidence, args.evidenceDir);
+  }
   if (stdout.length > 0) process.stdout.write(stdout);
   if (stderr.length > 0) process.stderr.write(stderr);
   process.exitCode = exitCode;
@@ -302,11 +409,12 @@ function runEngineProxy(rawInput, envelope, enginePath) {
 const rawInput = readFileSync(0);
 const envelope = readEnvelope(rawInput);
 const args = parseArguments(process.argv.slice(2));
+const spec = readSpec(args.spec);
 
 if (args.branch === "transport-deny") {
-  runTransport(rawInput, envelope);
+  runTransport(rawInput, envelope, args, spec);
 } else if (args.branch === "engine-proxy") {
-  runEngineProxy(rawInput, envelope, args.engine);
+  runEngineProxy(rawInput, envelope, args, spec);
 } else {
   process.exitCode = 1;
 }
