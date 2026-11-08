@@ -1,108 +1,77 @@
 # Codex Customization
 
-This repository is the versioned source of truth for personal, user-level
-Codex customization. It keeps authored configuration separate from the runtime
-state stored in `~/.codex`.
+User-level instructions and `PreToolUse` guardrails for an independently
+installed Codex ACP agent, including IntelliJ IDEA's Custom ACP Agent.
 
-## Contents
+## Install (Windows)
 
-- [`AGENTS.md`](AGENTS.md) — active global instructions for safe tool output
-  handling and bounded tool discovery.
-- [`HOOKS_INTENT.md`](HOOKS_INTENT.md) — design and acceptance criteria for
-  executable guardrails that may enforce deterministic parts of those rules.
-- [`HOOKS_PLAN.md`](HOOKS_PLAN.md) — kindless orchestration parent and source
-  allocation for the hooks work.
-- [`ENGINE plan`](plans/HOOKS_ENGINE_PLAN.md),
-  [`DEPLOYMENT plan`](plans/HOOKS_DEPLOYMENT_PLAN.md), and
-  [`ACCEPTANCE plan`](plans/HOOKS_ACCEPTANCE_PLAN.md) — independently reviewed
-  implementation-authority plans.
-- [`LICENSE`](LICENSE) — repository license.
-
-Personal Codex skills are intentionally maintained in the separate
-`C:\work\balokir\my-skills` repository.
-
-## Current Status
-
-`AGENTS.md` is ready for user-level activation through a symbolic link.
-
-`HOOKS_INTENT.md` is the design source. All three child hooks plans are
-`Ready for execution`; hook configuration, scripts, and tests have not been
-implemented yet. The rules in `AGENTS.md` remain authoritative until hooks
-exist and remain the semantic fallback after hooks are added.
-
-## Install Global Instructions On Windows
-
-Windows Developer Mode must be enabled, or the shell must have permission to
-create symbolic links. Run the following from this repository's root in
-PowerShell:
+Use your own Node.js (outside IDEA) and enable Windows Developer Mode or
+other permission to create symbolic links. From this checkout:
 
 ```powershell
-$sourcePath = (Resolve-Path -LiteralPath ".\AGENTS.md").Path
-$codexHome = Join-Path $env:USERPROFILE ".codex"
-$linkPath = Join-Path $codexHome "AGENTS.md"
-
-New-Item -ItemType Directory -Force -Path $codexHome | Out-Null
-
-if (Test-Path -LiteralPath $linkPath) {
-    throw "Codex AGENTS.md already exists: $linkPath"
-}
-
-New-Item -ItemType SymbolicLink -Path $linkPath -Target $sourcePath |
-    Out-Null
+node .\hooks\setup.mjs install
+node .\hooks\setup.mjs status
 ```
 
-The command deliberately refuses to replace an existing file or link. Inspect
-and preserve any existing global instructions before installing this one.
+The installer selects **the Node executable running the installer** and
+the current checkout. It creates exactly three links under `~/.codex`
+(or `CODEX_HOME`):
 
-Verify the active link with:
+- `hooks.json` -> the versioned `hooks/hooks.json`.
+- `codex-customization-hooks` -> this checkout's `hooks/` directory.
+- `codex-customization-node.exe` -> the selected Node executable.
+
+The versioned configuration contains no machine-specific paths. It uses
+the stable links, so Codex does not need to resolve Node from the IDE's PATH.
+Existing destinations are never overwritten. Repeating install is safe.
+
+Restart Codex (or create a new IDEA Custom ACP chat). Open `/hooks` in the
+bundled Codex CLI, verify the installed `PreToolUse` definition, and trust
+it if prompted. Never bypass hook trust.
+
+If you move the checkout or replace your Node installation, uninstall
+using the old checkout first, then install again with the new one.
+
+## Verify
 
 ```powershell
-$link = Get-Item -LiteralPath "$env:USERPROFILE\.codex\AGENTS.md" -Force
-$link | Select-Object FullName, LinkType, Target
+node .\hooks\tests\run-tests.mjs
 ```
 
-The expected `LinkType` is `SymbolicLink`, and `Target` should resolve to this
-repository's `AGENTS.md`.
+Then use a fresh IDEA Custom ACP chat for two shell commands:
 
-Start a new Codex session after installing the link or changing global
-instructions so the session receives the current rules.
+- `Write-Output 'ok'` should execute normally.
+- `Get-Content -Raw -LiteralPath 'AGENTS.md'` should be blocked before
+  execution by the bounded-read policy (the file need not exist).
 
-## Why Use A Symbolic Link
+CLI-only hook execution does not prove IDEA enforcement. The older C1–C4
+diagnostics already verified IDEA hook transport and real ENGINE denial
+with a diagnostic proxy; the new portable production launcher still needs
+its first live Windows/IDEA smoke test.
 
-The repository contains only authored customization. Codex may store session
-history, caches, authentication data, logs, and other runtime state under
-`~/.codex`; that directory should not be treated as a Git working tree.
-
-A symbolic link provides a stable boundary:
-
-- Git tracks the source file in this repository.
-- Codex discovers it at the normal user-level path.
-- A checkout or pull may replace the target file without breaking the link.
-- Runtime state remains outside version control.
-
-## Editing And Validation
-
-Edit customization in this repository, not through copied files under
-`~/.codex`. Keep global rules repository-independent; project-specific rules
-belong in the project's own `AGENTS.md`.
-
-Check changed Markdown with
-[`rumdl`](https://github.com/rvben/rumdl):
+## Uninstall
 
 ```powershell
-rumdl check README.md
-rumdl check AGENTS.md
-rumdl check HOOKS_INTENT.md
+node .\hooks\setup.mjs uninstall
 ```
 
-Validate only the files changed by the current work unless a full repository
-check is explicitly required.
+Only the three owned symlinks are removed; user settings, trust records,
+repository files, and other `~/.codex` data are untouched.
+Start a fresh session to verify deactivation.
 
-## Hooks
+## Rules and maintenance
 
-Before implementing hooks, follow [`HOOKS_INTENT.md`](HOOKS_INTENT.md). It
-defines the deployment model, guardrails, required tests, trust review, and
-rollback expectations.
+`AGENTS.md` supplies semantic rules that the hook cannot enforce. If you
+want global instructions, link it separately to `~/.codex/AGENTS.md`; the
+hook installer never overwrites existing instructions.
 
-Hooks should enforce only deterministic cases. They must not be presented as a
-replacement for instructions that require context or semantic judgment.
+For routine changes: **edit -> test -> smoke-test if behavior changes ->
+commit**. Independent review is useful for material policy, security, or
+architectural changes, not minor configuration edits.
+
+Historical planning and diagnostic records remain in `plans/` and
+`HOOKS_PLAN.md`. They are reference material rather than mandatory workflow
+for routine maintenance.
+
+The hook is a best-effort guardrail for bounded reads and names-only
+`ALL_TOOLS` discovery; it is not a security sandbox.

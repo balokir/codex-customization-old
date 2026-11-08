@@ -20,14 +20,15 @@ require semantic judgment.
 ## Deployment Model
 
 - Keep hook configuration, scripts, fixtures, and tests in this repository.
-- Expose the active user configuration through
-  `C:\Users\user\.codex\hooks.json` without copying versioned files.
+- Expose the active user configuration through `~/.codex/hooks.json`
+  (or `CODEX_HOME`) without copying versioned files.
 - Prefer a symbolic link so a Git checkout cannot silently leave an outdated
   active copy.
 - Use user-level hooks, not project-local hooks, so the guardrails apply in
   every repository.
 - Implement hooks as dependency-free JavaScript executed by a user-managed
-  Node.js runtime. Do not resolve the runtime from an IDE or ACP installation.
+  Node.js runtime selected at installation. Do not resolve the runtime from
+  an IDE or ACP installation.
 - Document the Codex trust review required after a hook definition or script
   changes.
 
@@ -140,7 +141,8 @@ Manual verification must confirm:
 
 ## Acceptance Criteria
 
-- All versioned hook sources live under `C:\work\balokir\codex-customization`.
+- All versioned hook sources live under the selected repository checkout,
+  without assuming a fixed machine-specific path.
 - The active user hook configuration resolves to the versioned source.
 - Tests demonstrate the required allow and deny cases without external dependencies.
 - Hook output never exposes full `ALL_TOOLS` metadata or unbounded file content.

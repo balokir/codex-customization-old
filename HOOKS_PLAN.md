@@ -1,5 +1,9 @@
 # Codex Hooks Implementation Authority
 
+> Historical planning and diagnostic record. The portable installation and
+> ordinary maintenance workflow are documented in `README.md`. The prior
+> D2/ACCEPTANCE gates are not prerequisites for routine configuration fixes.
+
 This document is the kindless orchestration parent and index for three
 independently reviewable child plans. It is allocation and coordination
 authority only and never permits implementation.

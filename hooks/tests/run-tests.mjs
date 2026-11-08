@@ -6,13 +6,12 @@ import {
   mkdtempSync,
   readFileSync,
   readlinkSync,
+  realpathSync,
   rmSync,
-  symlinkSync,
-  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ENGINE_URL = new URL("../pre_tool_use.mjs", import.meta.url);
@@ -23,7 +22,6 @@ const EXPECTED_ENGINE_SHA256 =
   "0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3";
 const EXPECTED_POLICY_SHA256 =
   "5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046";
-const EXPECTED_RUNTIME = "C:\\nvm4w\\nodejs\\node.exe";
 const EXPECTED_TIMEOUT_SECONDS = 5;
 const SECRET_PAYLOAD = "E1_SECRET_PAYLOAD_7391";
 const SECRET_METADATA = "E1_SECRET_METADATA_1842";
@@ -511,111 +509,95 @@ function resolvedLinkTarget(path) {
   return resolve(dirname(path), readlinkSync(path));
 }
 
-function installActivation(source, destination) {
-  if (!pathExists(source)) {
-    throw new Error("deployment source is missing");
-  }
-  if (pathExists(destination)) {
-    throw new Error("activation destination already exists");
-  }
-
-  symlinkSync(source, destination, "file");
-  if (resolvedLinkTarget(destination) !== resolve(source)) {
-    unlinkSync(destination);
-    throw new Error("activation link resolved to the wrong target");
-  }
-}
-
-function disableActivation(source, destination) {
-  const destinationState = lstatSync(destination);
-  if (!destinationState.isSymbolicLink()) {
-    throw new Error("activation destination is not a symbolic link");
-  }
-  if (resolvedLinkTarget(destination) !== resolve(source)) {
-    throw new Error("activation link points to a different source");
-  }
-  unlinkSync(destination);
-}
-
 const deploymentConfig = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
 const matcherGroup = deploymentConfig.hooks?.PreToolUse?.[0];
 const deploymentHandler = matcherGroup?.hooks?.[0];
+const SETUP = fileURLToPath(new URL("../setup.mjs", import.meta.url));
 
 assert.deepEqual(Object.keys(deploymentConfig).sort(), ["description", "hooks"]);
 assert.equal(matcherGroup.matcher, "*");
 assert.equal(deploymentHandler.type, "command");
 assert.equal(deploymentHandler.timeout, EXPECTED_TIMEOUT_SECONDS);
-assert.equal(deploymentHandler.commandWindows, deploymentHandler.command);
-const commandMatch = /^"([^"]+)"\s+"([^"]+)"$/u.exec(
-  deploymentHandler.commandWindows,
-);
-assert.notEqual(commandMatch, null);
-assert.equal(commandMatch[1], EXPECTED_RUNTIME);
-assert.equal(resolve(commandMatch[2]), resolve(ENGINE_PATH));
-
+assert.equal(deploymentHandler.command.includes("codex-customization-node"), true);
+assert.equal(deploymentHandler.commandWindows.includes("codex-customization-node.exe"), true);
+assert.equal(deploymentHandler.commandWindows.includes("Join-Path"), true);
+assert.equal(deploymentHandler.commandWindows.includes("C:\\nvm4w"), false);
+assert.equal(deploymentHandler.commandWindows.includes("C:\\work"), false);
 assert.equal(sha256(ENGINE_PATH), EXPECTED_ENGINE_SHA256);
 assert.equal(sha256(POLICY_PATH), EXPECTED_POLICY_SHA256);
 
-assert.equal(isAbsolute(commandMatch[1]), true);
-assert.equal(isAbsolute(commandMatch[2]), true);
-assert.equal(pathExists(commandMatch[1]), true);
-const runtimeResult = spawnSync(commandMatch[1], ["--version"], {
-  encoding: "utf8",
-  windowsHide: true,
-});
-assert.equal(runtimeResult.status, 0, runtimeResult.stderr);
-assert.match(runtimeResult.stdout, /^v\d+\.\d+\.\d+\s*$/u);
+const fixtureRoot = mkdtempSync(join(tmpdir(), "codex hooks portability "));
+const nodeName = process.platform === "win32"
+  ? "codex-customization-node.exe"
+  : "codex-customization-node";
+const links = [
+  join(fixtureRoot, "hooks.json"),
+  join(fixtureRoot, "codex-customization-hooks"),
+  join(fixtureRoot, nodeName),
+];
 
-const fixtureRoot = mkdtempSync(join(tmpdir(), "codex-hooks-deployment-"));
+function setup(action) {
+  return spawnSync(process.execPath, [SETUP, action], {
+    env: { ...process.env, CODEX_HOME: fixtureRoot },
+    encoding: "utf8",
+    windowsHide: true,
+  });
+}
+function assertSetup(action) {
+  const result = setup(action);
+  assert.equal(result.status, 0, result.stderr);
+}
+
 try {
-  const activation = join(fixtureRoot, "hooks.json");
-  const unrelated = join(fixtureRoot, "unrelated.txt");
-  writeFileSync(unrelated, "preserve-me", "utf8");
+  // A user-owned destination stops installation without modifying other paths.
+  writeFileSync(links[0], "user-config", "utf8");
+  assert.notEqual(setup("install").status, 0);
+  assert.equal(readFileSync(links[0], "utf8"), "user-config");
+  assert.equal(pathExists(links[1]), false);
+  rmSync(links[0]);
 
-  installActivation(CONFIG_PATH, activation);
-  assert.equal(lstatSync(activation).isSymbolicLink(), true);
-  assert.equal(resolvedLinkTarget(activation), resolve(CONFIG_PATH));
+  assertSetup("install");
+  assertSetup("install");
+  for (const link of links) assert.equal(lstatSync(link).isSymbolicLink(), true);
+  assert.equal(realpathSync(links[0]), realpathSync(CONFIG_PATH));
+  assert.equal(realpathSync(links[1]), realpathSync(dirname(ENGINE_PATH)));
+  assert.equal(realpathSync(links[2]), realpathSync(process.execPath));
 
-  const missingSource = join(fixtureRoot, "missing-hooks.json");
-  const missingDestination = join(fixtureRoot, "missing-destination.json");
-  assert.throws(
-    () => installActivation(missingSource, missingDestination),
-    /deployment source is missing/u,
-  );
-  assert.equal(pathExists(missingDestination), false);
+  const safe = { ...safeEnvelope, tool_input: { command: "Write-Output 'ok'" } };
+  const denied = {
+    ...safeEnvelope,
+    tool_input: { command: "Get-Content -Raw -LiteralPath 'AGENTS.md'" },
+  };
+  const shell = process.platform === "win32" ? "pwsh.exe" : "sh";
+  const args = process.platform === "win32"
+    ? ["-NoProfile", "-NonInteractive", "-Command", deploymentHandler.commandWindows]
+    : ["-c", deploymentHandler.command];
 
-  const existingDestination = join(fixtureRoot, "existing.json");
-  writeFileSync(existingDestination, "existing-content", "utf8");
-  assert.throws(
-    () => installActivation(CONFIG_PATH, existingDestination),
-    /activation destination already exists/u,
-  );
-  assert.equal(readFileSync(existingDestination, "utf8"), "existing-content");
+  function hook(input) {
+    return spawnSync(shell, args, {
+      input: JSON.stringify(input),
+      env: { ...process.env, CODEX_HOME: fixtureRoot },
+      encoding: "utf8",
+      windowsHide: true,
+    });
+  }
+  const allowed = hook(safe);
+  assert.equal(allowed.status, 0, allowed.stderr);
+  assert.equal(allowed.stdout, "");
+  const blocked = hook(denied);
+  assert.equal(blocked.status, 0, blocked.stderr);
+  assert.equal(JSON.parse(blocked.stdout).hookSpecificOutput.permissionDecision, "deny");
 
-  const wrongSource = join(fixtureRoot, "wrong-source.json");
-  const wrongDestination = join(fixtureRoot, "wrong-target.json");
-  writeFileSync(wrongSource, "{}", "utf8");
-  symlinkSync(wrongSource, wrongDestination, "file");
-  assert.throws(
-    () => installActivation(CONFIG_PATH, wrongDestination),
-    /activation destination already exists/u,
-  );
-  assert.throws(
-    () => disableActivation(CONFIG_PATH, wrongDestination),
-    /activation link points to a different source/u,
-  );
-  assert.equal(resolvedLinkTarget(wrongDestination), resolve(wrongSource));
+  assertSetup("uninstall");
+  assertSetup("uninstall");
+  for (const link of links) assert.equal(pathExists(link), false);
 
-  disableActivation(CONFIG_PATH, activation);
-  assert.equal(pathExists(activation), false);
-  assert.equal(readFileSync(unrelated, "utf8"), "preserve-me");
-
-  installActivation(CONFIG_PATH, activation);
-  assert.equal(lstatSync(activation).isSymbolicLink(), true);
-  assert.equal(resolvedLinkTarget(activation), resolve(CONFIG_PATH));
-  assert.equal(readFileSync(unrelated, "utf8"), "preserve-me");
+  // Uninstall must refuse an unexpected file rather than removing it.
+  writeFileSync(links[0], "preserve", "utf8");
+  assert.notEqual(setup("uninstall").status, 0);
+  assert.equal(readFileSync(links[0], "utf8"), "preserve");
 } finally {
   rmSync(fixtureRoot, { recursive: true, force: true });
 }
 
-console.log("E1/E2/E3: 67 fixture cases passed; D1: 8 deployment fixture cases passed");
+console.log("E1/E2/E3: 67 fixture cases passed; portable hook install and smoke tests passed");
