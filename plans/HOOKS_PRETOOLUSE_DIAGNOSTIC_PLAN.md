@@ -1,515 +1,469 @@
-# Codex Hooks PRETOOLUSE-DIAGNOSTIC Investigation Plan
+# Codex Hooks PRETOOLUSE-DIAGNOSTIC Investigation Authority
 
-This artifact is a standalone follow-up investigation for the failed live
-denial proof in DEPLOYMENT `D2`. It does not reopen ENGINE, complete D2, or
-authorize a production correction. Its independent complete-plan review has
-published `Ready for execution`.
+This artifact replaces the invalid terminal-CLI diagnostic plan with an
+independently reviewed ACP-specific investigation for the actual target host.
+It does not reopen ENGINE, complete DEPLOYMENT `D2`, or authorize a production
+correction.
 
-## Planning Gate Result: `PKG-HOOK-PRETOOLUSE-DIAGNOSTIC`
+## Prior Result Invalidation
+
+The execution recorded by commits `7e61c97`, `4691dd8`, `7cf2852`, and
+`ce129a3` exercised the standalone OpenAI Codex terminal CLI `0.159.0`. That
+host was not the intended integration boundary. Its verdict
+`COMPLETE — BOUNDED UNRESOLVED` is withdrawn for this workstream and must not be
+used as evidence about IDEA, ACP, DEPLOYMENT readiness, or ENGINE compatibility.
+
+The previous run remains available in Git history only as wrong-host
+characterization. Its fixture code may be reused after review, but none of its
+live discovery, trust, invocation, error, or host-outcome observations satisfy
+this revised plan.
+
+## Planning Gate Result: `PKG-HOOK-PRETOOLUSE-DIAGNOSTIC-ACP`
 
 ### Package Contract
 
 - **Kind:** `CHARACTERIZATION`.
-- **Trigger:** the exact user-level hook was discovered and trusted during D2,
-  but a harmless two-read canary executed in fresh Codex CLI sessions while
-  direct ENGINE simulation denied the intended raw `PreToolUse` envelope.
-- **Sources:** the parent mismatch contract in
-  [`HOOKS_PLAN.md`](../HOOKS_PLAN.md#cross-child-mismatch-and-follow-up-contract),
-  [DEPLOYMENT D2's proof obligations](HOOKS_DEPLOYMENT_PLAN.md#d2-activate-trust-disable-and-restore),
-  the completed ENGINE handoff, the D1 deployment configuration, the observed
-  D2 rollback state, and the current
-  [official OpenAI Hooks contract](https://learn.chatgpt.com/docs/hooks).
-- **Primary invariant `INV-DIAGNOSTIC-ATTRIBUTION`:** every conclusion is tied
-  to one exact CLI version, hook definition hash, trust state, session mode,
-  event shape, handler result, and host outcome; an execution-process wrapper
-  is never treated as hook input without direct hook-boundary evidence.
+- **Trigger:** DEPLOYMENT `D2` requires live proof for the Codex instance used
+  from IDEA, while the completed diagnostic run exercised an unrelated global
+  terminal CLI.
+- **Target host:** IDEA AI Chat configured with the Custom ACP client command
+  `C:\nvm4w\nodejs\codex-acp.cmd`.
+- **Resolved runtime chain:** the configured command uses the independent NVM
+  Node runtime to start `@agentclientprotocol/codex-acp` `2.5.0`, which bundles
+  `@openai/codex` `0.165.0`. The user confirmed that the current conversation
+  uses this exact Custom ACP integration.
+- **Sources:** the current user correction; the parent mismatch contract in
+  [`HOOKS_PLAN.md`](../HOOKS_PLAN.md#cross-child-mismatch-and-follow-up-contract);
+  [DEPLOYMENT D2](HOOKS_DEPLOYMENT_PLAN.md#d2-activate-trust-disable-and-restore);
+  the completed ENGINE handoff; the D1 deployment configuration; the
+  [official OpenAI Hooks contract](https://learn.chatgpt.com/docs/hooks);
+  the [official Codex IDE integration guidance](https://learn.chatgpt.com/docs/codex/ide);
+  and the [official Codex App Server lifecycle reference](https://learn.chatgpt.com/docs/app-server).
+- **Primary invariant `INV-ACP-ATTRIBUTION`:** every live conclusion is tied to
+  the exact IDEA Custom ACP configuration, adapter identity, bundled Codex
+  identity, ACP session/process lifetime, hook definition hash, trust state,
+  handler evidence, and host outcome. Evidence from standalone `codex` TUI or
+  `codex exec` is never substituted for ACP evidence.
 - **Depends on:** D1 commit
   `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb`, unchanged ENGINE runtime
-  artifacts, and the known inactive user-link state after the failed D2 attempt.
-- **Provides:** one evidence-backed root-cause classification or the smallest
-  explicitly bounded unresolved layer, plus the correct follow-up handoff.
-- **Scope boundary:** dependency-free diagnostic fixtures and handlers,
-  bounded sanitized evidence, the exact temporary user-level diagnostic link,
-  and exact-definition trust changes performed only through `/hooks`.
-- **Minimum closure:** prove whether the diagnostic hook runs and capture the
-  allowlisted `PreToolUse` shape; if deterministic diagnostic denial is invoked
-  and enforced, trace the unchanged ENGINE decision through a transparent
-  proxy; otherwise classify the terminal transport boundary. In every branch,
-  correlate the handler result with the host outcome, rollback to the known
-  inactive state, and classify the failing layer or smallest unresolved layer.
-- **Explicit exclusions:** production ENGINE or policy changes, production
-  `hooks.json` changes, D2 completion, README or intent changes, ACCEPTANCE,
-  Codex upgrade or downgrade, project-folder trust changes, external issue
-  submission, and unrelated `~/.codex` mutation.
+  artifacts, the known inactive user-link state, and the existing IDEA Custom
+  ACP configuration.
+- **Provides:** one ACP-specific root-cause classification or the smallest
+  explicitly bounded unresolved ACP layer, plus the correct follow-up handoff.
+- **Scope boundary:** dependency-free diagnostic handlers and fixtures, bounded
+  sanitized evidence, the exact temporary user-level diagnostic link, fresh
+  IDEA Custom ACP sessions, and exact-definition trust changes performed only
+  through a trust surface exposed to the target ACP integration.
+- **Minimum closure:** prove the actual ACP process identity; prove hook
+  discovery and exact-definition trust within the target integration; prove
+  whether a new ACP session invokes the diagnostic handler; capture the
+  allowlisted `PreToolUse` shape; prove deterministic diagnostic denial; trace
+  the unchanged ENGINE decision through a transparent proxy when permitted;
+  correlate ACP lifecycle and host outcome; and restore the inactive state.
+- **Explicit exclusions:** standalone CLI `0.159.0`; `codex exec`; terminal TUI
+  evidence; JetBrains' separate bundled ACP installation; production ENGINE,
+  policy, or `hooks.json` changes; D2 completion; README, intent, or ACCEPTANCE
+  changes; ACP package, Codex, Node, IDEA, or plugin upgrades; Custom ACP client
+  reconfiguration; project-folder trust changes; external issue submission;
+  and unrelated `~/.codex` mutation.
 
-### Current Evidence Baseline
+### Target Runtime Identity
 
-The investigation starts from these observations, not from a presumed cause:
+The reviewed baseline resolves the target chain as follows:
 
-- repository HEAD after D1 is
-  `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb`;
-- `hooks/hooks.json` SHA-256 is
-  `0ee2edb0ff7f4b35a24cd1099baf0dc86260911ee958a64aa070cd87af4d9879`;
-- the attempted host was Codex CLI `0.159.0` on Windows with independent Node
-  `C:\nvm4w\nodejs\node.exe`;
-- `/hooks` displayed and trusted the exact user source, matcher, command, and
-  five-second timeout;
-- multiple fresh noninteractive sessions executed the harmless two-read
-  canary with exit `0` and empty output;
-- direct ENGINE simulation denied the intended raw event with the expected
-  multiple-read reason;
-- a session `CommandExecution` record showed Codex launching
-  `pwsh.exe -Command <canary>`, but that record describes the executor process
-  and does not establish what the hook received on stdin;
-- the exact user activation link was removed after the failed proof and is
-  currently absent; and
-- the exact trusted-definition record may remain persisted but is inactive
-  while its source link is absent.
+```text
+IDEA AI Chat
+  -> Custom ACP client
+  -> C:\nvm4w\nodejs\codex-acp.cmd
+  -> C:\nvm4w\nodejs\node.exe
+  -> @agentclientprotocol/codex-acp 2.5.0
+  -> bundled @openai/codex 0.165.0
+```
+
+At plan revision time:
+
+- `C:\nvm4w\nodejs` is a symbolic link to the active NVM Node `v25.0.0` root;
+- `codex-acp.cmd` is the npm command shim for
+  `@agentclientprotocol/codex-acp\dist\index.js`;
+- the ACP entry module SHA-256 is
+  `15de6b2dd5203876a48b12861378bcf87040d623ab2159e05052dc9d54c32b16`;
+- the configured `codex-acp.cmd` shim SHA-256 is
+  `333a7c36daf9e73d55f123d36af6a46d2ed2dd5a14a9894f0f525b09f4c4a039`;
+- the bundled `codex.exe` reports `codex-cli 0.165.0` and has SHA-256
+  `d4b2e6a054ea1dfe53217f9d8942c5f8a9f4b76171a1e0bb76ced5759915300a`;
+  and
+- matching versions and hashes in JetBrains' separate bundled installation do
+  not make that installation the target. Process provenance must resolve to the
+  configured NVM command chain above.
+
+Execution must reverify every identity before live mutation. A changed command,
+package version, binary hash, or process provenance invalidates this baseline
+and requires plan review before continuing.
+
+The reviewed `codex-acp` `2.5.0` implementation contains the JetBrains AIR
+`codexHooks` capability and the `_codex/hooks/list` and `_codex/hooks/trust`
+extension methods. It advertises `codexHooks` only on the ACP v1 initialization
+path, and its list implementation filters App Server results to hooks whose
+source is `sessionFlags`. This is adapter implementation evidence, not proof
+that the running IDEA client negotiated the capability or can see the exact
+user-level source. The investigation must observe both through IDEA. It must
+not invoke these private methods out of band as substitute target evidence.
 
 ### Official Contract Baseline
 
-The investigation must recheck the current official OpenAI Hooks documentation
-at execution time and record the access date. The present planning baseline is:
+The investigation must recheck the official OpenAI documentation at execution
+time and record the access date. The present baseline is:
 
-- unified exec is covered by `PreToolUse` and matches as `Bash`;
-- a command hook receives one JSON object on stdin;
-- shell events expose the command as `tool_input.command`;
-- a synchronous `PreToolUse` deny uses the documented hook-specific JSON shape
-  or the documented exit-code path; and
-- `/hooks` is the supported review and exact-definition trust surface.
+- local synchronous hooks use the documented discovery, trust, input, decision,
+  and timeout contracts;
+- unified exec is covered by `PreToolUse` and matches as `Bash` in the Codex
+  hook contract;
+- shell events expose the tool input command as `tool_input.command`;
+- Codex rich clients may receive `hook/started` and `hook/completed` lifecycle
+  notifications for synchronous hooks;
+- official App Server behavior is supporting context, not proof that
+  `codex-acp` forwards those notifications unchanged to IDEA; and
+- official OpenAI documentation does not establish JetBrains Custom ACP
+  capability negotiation or the adapter's private hook extensions. Those are
+  verified from the installed adapter and the running target integration.
 
-Documentation drift is evidence. If the official contract materially changes,
-stop and revise this plan before running live probes.
+Documentation drift is evidence. A material contract change stops execution
+and requires plan revision.
 
 ### Trigger Scan
 
-| Trigger | Result | Diagnostic consequence |
+| Trigger | Result | ACP-specific consequence |
 |---|---|---|
-| `LIFECYCLE` | `YES` | Temporary link and trust states must be explicit and reversible |
-| `CONCURRENCY` | `YES` | Every other matching hook must be excluded or attributed |
+| `LIFECYCLE` | `YES` | Link, trust, ACP process, thread, and turn states must be explicit |
+| `CONCURRENCY` | `YES` | Other matching hooks and simultaneous ACP sessions must be excluded or attributed |
 | `AUTHORITY` | `YES` | Discovery, trust, invocation, decision, and enforcement are separate facts |
-| `RECOVERY` | `YES` | Every failure path returns to an absent exact link |
-| `COMPATIBILITY` | `YES` | CLI mode, tool name, input keys, and Windows execution may differ |
-| `READINESS` | `YES` | A cause claim requires complete boundary attribution |
-| `MULTI_ATOMICITY` | `NO` | No production state becomes accepted in this investigation |
+| `RECOVERY` | `YES` | Every failure path removes only the verified exact link and closes task-owned diagnostics |
+| `COMPATIBILITY` | `YES` | ACP adapter, bundled Codex, tool mapping, event keys, and Windows execution may differ |
+| `READINESS` | `YES` | A cause claim requires complete ACP-boundary attribution |
+| `MULTI_ATOMICITY` | `NO` | No production state becomes accepted during characterization |
 | `CROSS_LAYER` | `NO` | No database or remote service boundary is involved |
 
-### ART-DIAGNOSTIC: Evidence Contract
+### ART-ACP-EVIDENCE: Bounded Evidence Contract
 
-Diagnostic code and recorded evidence may retain only:
+Diagnostic code and retained evidence may record only:
 
 - a non-secret probe identifier;
-- CLI version and session-mode label;
-- hook source hash, matcher, and observed trust class;
-- hook invocation count;
+- the configured ACP command path and its SHA-256 identity;
+- adapter version, ACP entry hash, bundled Codex version and binary hash;
+- ACP process ID, parent process ID, start time, and an allowlisted provenance
+  class without command-line arguments or environment values;
+- ACP session/thread/turn identifiers only when already surfaced by the client
+  and needed for hook-event correlation;
+- hook source hash, matcher, synchronous flag, timeout, and observed trust class;
+- handler invocation count;
 - `hook_event_name`, canonical `tool_name`, JSON value types, and input key names;
 - command length, SHA-256 for a known synthetic canary, and one allowlisted shape
   class: `expected-raw`, `pwsh-wrapper`, `other`, `missing`, or `non-string`;
-- diagnostic branch, handler exit code, output JSON key names, decision class,
-  and a fixed bounded reason code; and
+- handler branch, exit code, output JSON key names, decision class, and fixed
+  bounded reason code;
+- presence or absence of ACP-visible hook lifecycle events, retaining only event
+  names, status, and correlation identifiers; and
 - host outcome: `blocked`, `executed`, `hook-error`, `timeout`, or `unknown`.
 
 It must not retain raw commands, prompts, payloads, file contents, transcript
-content, environment values, tool descriptors, schemas, credentials, or
-secrets. Per-probe evidence is capped at 4 KiB. Unknown shapes are classified
-without copying their values.
+content, full process command lines, environment values, tool descriptors,
+schemas, credentials, or secrets. Per-probe evidence is capped at 4 KiB.
+Unknown shapes are classified without copying their values.
 
-### ART-CAUSE: Decision Tree
+### ART-ACP-CAUSE: Decision Tree
 
 | Observation | Classification |
 |---|---|
-| Diagnostic handler is not invoked | discovery, trust, feature, matcher, or session-mode layer; subdivide with `/hooks` and mode matrix |
-| Handler runs but event or `tool_input.command` violates the documented shape | Codex host-contract compatibility issue |
-| Synthetic diagnostic deny is emitted but host executes | host decision-consumption issue |
-| Synthetic diagnostic deny blocks, but transparent ENGINE proxy emits no deny | ENGINE classification or event-shape compatibility issue |
-| ENGINE proxy emits a valid deny but host executes | host handling issue specific to the proxied decision path |
-| Proxy blocks but production definition does not | production discovery, trust, command invocation, or definition-specific issue |
-| Competing hook can affect the result | evidence is unattributable until isolated or fully accounted for |
-| No row receives complete evidence | unresolved; report the smallest unproven boundary without a root-cause claim |
+| Process provenance does not resolve to the configured NVM `codex-acp.cmd` chain | wrong host; evidence invalid |
+| IDEA does not negotiate the adapter's ACP v1 `codexHooks` capability | ACP protocol/capability compatibility issue |
+| Capability is negotiated but the adapter does not list the exact user-level source, including because of its `sessionFlags` filter | ACP source/filter compatibility issue |
+| Target ACP discovers the source but exposes no authorized exact-definition trust path | ACP trust-surface compatibility issue |
+| Trusted definition is active but handler is not invoked | ACP-to-Codex hook transport or process-start issue |
+| Handler runs but input violates the documented shape | ACP/Codex host-contract compatibility issue |
+| Synthetic diagnostic deny is emitted but ACP host executes | ACP decision-consumption issue |
+| Synthetic diagnostic deny blocks but transparent ENGINE proxy emits no deny | ENGINE classification or ACP event-shape compatibility issue |
+| ENGINE proxy emits a valid deny but ACP host executes | ACP handling issue specific to the production decision path |
+| Diagnostic proxy blocks but production definition does not | production definition discovery, trust, or invocation issue |
+| Competing hook or concurrent session can affect the result | evidence unattributable until isolated or fully accounted for |
+| No row receives complete evidence | unresolved; report the smallest unproven ACP boundary without a root-cause claim |
 
-`pwsh.exe` is classified as hook input only if the diagnostic handler directly
-classifies its stdin that way. Executor traces alone cannot satisfy that proof.
+IDEA UI output, ACP lifecycle events, process observations, and diagnostic
+handler records are distinct evidence sources. None may silently stand in for
+another.
 
 ### Gate Conclusion
 
-The scope is sufficient for a non-mutating production diagnosis: it separates
-hook discovery from invocation, handler input from executor implementation,
-ENGINE decision from host enforcement, and diagnosis from correction. It has a
-bounded evidence contract and a mandatory rollback path.
+The revised scope isolates the actual IDEA Custom ACP host, rejects the invalid
+terminal-CLI evidence, separates ACP process identity from hook invocation, and
+preserves the prior bounded confidentiality and rollback contracts. It does not
+assert that IDEA exposes a trust UI or hook lifecycle notifications; those are
+subjects of characterization.
 
-Open decisions: none. Unmapped diagnostic scope: none. Production correction
-authority: none.
+Open decisions: none. Unmapped ACP diagnostic scope: none. Production
+correction authority: none.
 
-Review verdict: `READY`. The independent complete-plan review verified the
-official contract baseline on 2026-11-08, corrected the conditional execution
-graph and cleanup order, made symbolic-link capability explicit, and found no
-remaining prerequisite, dependency, ordering, or proof-obligation gap.
+Gate verdict: `READY`. Planning is allowed only for the child investigation
+plan below.
 
-## Child Plan: PRETOOLUSE-DIAGNOSTIC
+## Child Plan: PRETOOLUSE-DIAGNOSTIC-ACP
 
 ### Plan Core
 
-- **Status:** `Complete — bounded unresolved transport boundary`.
+- **Status:** `Ready for execution`.
 - **Permitting result:**
-  [`PKG-HOOK-PRETOOLUSE-DIAGNOSTIC`](#planning-gate-result-pkg-hook-pretooluse-diagnostic),
+  [`PKG-HOOK-PRETOOLUSE-DIAGNOSTIC-ACP`](#planning-gate-result-pkg-hook-pretooluse-diagnostic-acp),
   `CHARACTERIZATION`.
 - **Reviewed baseline:**
-  `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb`.
-- **Goal:** identify why a trusted user-level `PreToolUse` hook did not produce
-  the expected active denial in fresh Codex CLI sessions.
-- **Target state:** one attributable root-cause classification or a precisely
-  bounded unresolved layer, with the user activation link absent afterward.
+  `ce129a32dba1b158f111887e68ce798cd317f917`.
+- **Goal:** identify why the target IDEA Custom ACP integration does or does not
+  invoke and enforce the user-level `PreToolUse` hook.
+- **Target state:** one attributable ACP-specific root-cause classification or
+  a precisely bounded unresolved ACP layer, with the user activation link absent
+  and all task-owned transient evidence removed afterward.
 
 ### External Prerequisites
 
-- D1 remains complete; commit
-  `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb` remains in the current history and
-  D1-owned artifacts still match its recorded identities.
-- ENGINE script and policy hashes still match ENGINE Final Conformance.
-- `C:\nvm4w\nodejs\node.exe` is available.
-- Windows symbolic-link permission remains available for the exact user link.
+- The user-confirmed IDEA Custom ACP configuration still launches
+  `C:\nvm4w\nodejs\codex-acp.cmd`.
+- D1 remains complete and the ENGINE script, policy, and production config
+  hashes still match their recorded handoffs.
+- `C:\nvm4w\nodejs\node.exe` is available independently of IDEA.
 - The exact user activation link is absent before investigation.
-- Codex CLI `0.159.0` remains available for baseline reproduction.
-- `/hooks` can inspect and review the exact temporary diagnostic definition.
-- A fresh task-owned temporary directory can be created and resolved before it
-  is passed to diagnostic code.
+- A new IDEA Custom ACP chat can start after each activation-state change.
+- The target ACP integration can surface negotiated capability and
+  discovery/trust state, or an explicit absence of one of those surfaces,
+  without falling back to a standalone CLI.
+- A fresh task-owned temporary directory can be created, resolved, bounded, and
+  removed without scanning unrelated temp content.
 
 ### Writable Authorization
 
-The proposed writable boundary is limited to:
+The writable boundary is limited to:
 
 - `C:\work\balokir\codex-customization\hooks\diagnostics\**`;
 - `C:\work\balokir\codex-customization\hooks\tests\diagnostics\**`;
 - this plan's state and bounded completion-evidence sections;
 - one exact, pre-resolved task-owned directory below the operating-system temp
-  directory for transient sanitized probe records;
+  directory for transient sanitized ACP probe records;
 - the exact link `C:\Users\user\.codex\hooks.json`; and
 - the Codex-managed trust record for each exact diagnostic definition, changed
-  only through `/hooks`.
+  only through a trust interaction exposed by the target IDEA Custom ACP
+  integration.
 
-No other user-managed path under `C:\Users\user\.codex` is writable. The plan
-must not edit `hooks/pre_tool_use.mjs`, `hooks/policy.json`, production
-`hooks/hooks.json`, ENGINE, DEPLOYMENT, ACCEPTANCE, README, `HOOKS_INTENT.md`,
-Codex configuration, project trust, or the Codex installation.
+No other user-managed path under `C:\Users\user\.codex` is writable. Execution
+must not edit `codex-acp.cmd`, its npm package, bundled Codex, IDEA settings,
+Custom ACP client configuration, `hooks/pre_tool_use.mjs`, `hooks/policy.json`,
+production `hooks/hooks.json`, ENGINE, DEPLOYMENT, ACCEPTANCE, README,
+`HOOKS_INTENT.md`, Codex configuration, project trust, or the Codex installation.
 
 ### Diagnostic Design Constraints
 
-- Use dependency-free Node.js and the independent runtime.
+- Use dependency-free Node.js and the independent NVM runtime.
+- Reuse existing diagnostic assets only after C1 proves their bounded evidence,
+  confidentiality, pass-through, and cleanup properties still hold.
+- Before live use, C1 must replace all CLI `0.159.0`, `cliVersion`, `codex exec`,
+  and CLI session-mode assumptions in the existing diagnostic definitions,
+  probe specification, handler evidence fields, and fixtures with reviewed
+  target-ACP identities and fresh IDEA chat/session semantics.
 - Match only `^Bash$` for live probes.
-- Use a unique synthetic marker and a harmless no-output canary.
+- Use a unique synthetic marker and harmless no-output canaries.
 - The diagnostic handler has two reviewed branches:
   1. a deterministic transport-deny branch independent of ENGINE; and
-  2. a transparent ENGINE-proxy branch that forwards the original stdin,
-     captures only allowlisted metadata about ENGINE's result, and preserves
-     its stdout, stderr, and exit status unchanged.
-- Fixture tests must prove the 4 KiB evidence cap, allowlist, unknown-shape
-  behavior, no raw-value retention, output pass-through, and cleanup.
-- Never infer hook invocation from command execution or transcript presence.
+  2. a transparent ENGINE-proxy branch that forwards original stdin, records
+     only allowlisted metadata about ENGINE's result, and preserves stdout,
+     stderr, and exit status unchanged.
+- Never use `codex exec`, terminal TUI, JetBrains' bundled ACP copy, or a
+  different ACP harness as live proof for the target host.
 - Never use `--dangerously-bypass-hook-trust`.
-- Do not upgrade or downgrade Codex during the baseline matrix.
-- If interactive CLI requires saving project-folder trust, record that mode as
-  unavailable; do not authorize the mutation.
+- Never infer handler invocation from a command-execution item, process list,
+  IDEA status text, or ACP lifecycle event alone.
+- Do not upgrade, downgrade, reinstall, or reconfigure any runtime during the
+  baseline matrix.
+- If target ACP trust requires an unauthorized configuration mutation, record
+  the trust-surface boundary and stop instead of using another client.
+- Do not call `_codex/hooks/list` or `_codex/hooks/trust` from a separate ACP
+  harness. Only the capability negotiated and actions exposed by the configured
+  IDEA client count as target evidence.
 
 ### Lifecycle And Recovery
 
 | State | Event | Required result |
 |---|---|---|
-| Inactive | Install exact diagnostic link | Discovered, review required |
-| Discovered | Review through `/hooks` | Exact diagnostic definition trusted |
-| Trusted | Run transport probe in fresh session | Invocation and deterministic deny classified |
-| Trusted | Run ENGINE-proxy probe in fresh session | Event, ENGINE decision, and host result correlated |
-| Any active diagnostic state | Aborting failure or investigation completion | Remove only the verified exact link |
-| Link absent | Verify inactive canary | Exit `0`, no output, no diagnostic record |
+| Inactive | Reverify target ACP identity and initialization | Exact configured NVM ACP chain and negotiated capability state established |
+| Inactive | Install exact diagnostic link | Exact target source becomes listed or the capability/source-filter gap is recorded |
+| Discovered | Review through target ACP trust surface | Exact diagnostic definition trusted, or trust boundary classified |
+| Trusted | Start new IDEA Custom ACP chat | New ACP process/session identity recorded |
+| Fresh target session | Run transport probe | Invocation and deterministic deny classified |
+| Proven transport | Run ENGINE-proxy probe in another fresh target session | Event, ENGINE decision, and host result correlated |
+| Any active diagnostic state | Failure or completion | Remove only the verified exact link |
+| Link absent | Start new target ACP chat and run inactive canary | Normal behavior, no diagnostic record |
 | Inactive verified | Remove transient evidence directory | No task-owned temp evidence remains |
 
-An unexpected destination, changed source hash, or failed cleanup stops
-execution. Preserve the unexpected object and report it; do not overwrite or
-delete unverified state. A competing unattributed hook stops further live
-probing and routes to I4 as a bounded evidence gap after recovery removes the
-verified exact diagnostic link.
+An unexpected destination, changed runtime identity, competing unattributed
+hook, wrong process provenance, or failed cleanup stops execution. Preserve an
+unexpected object and report it; do not overwrite or delete unverified state.
 
 ### Execution Rule
 
-Execute `I1 -> I2 -> I3 -> I4` when I2 proves that the deterministic diagnostic
-deny is invoked and enforced. If I2 instead reaches a terminal transport result,
-execute `I1 -> I2 -> I4` and record I3 as not applicable. Start a fresh agent
-for each executed top-level step and continue automatically after each completed
-step. Commit a completed top-level step only when it produced repository
-changes; do not create empty commits and do not push. A contradiction, scope
-escape, or failed rollback stops the cycle and is recorded before handoff.
+Execute `C1` through `C4` in the reviewed total order. Start a fresh agent for
+each top-level step and continue automatically after each completed step. Commit
+a completed top-level step only when it produced repository changes; do not
+create empty commits and do not push. Fresh-agent ownership does not replace the
+requirement for a newly started IDEA Custom ACP chat/process after each live
+activation-state change. A contradiction, scope escape, wrong-host observation,
+or failed rollback stops the cycle and is recorded before handoff.
 
 ### Compact Execution Surface
 
 | Order | Transition | Depends on | Provides |
 |---|---|---|---|
-| 1 | [`I1`](#i1-freeze-the-baseline-and-build-bounded-diagnostics) | reviewed plan and external prerequisites | Tested diagnostic package and exact matrix |
-| 2 | [`I2`](#i2-prove-live-hook-transport) | `I1` | Attributed transport classification and one I3/I4 route |
-| 3 | [`I3`](#i3-trace-the-engine-decision-path) | `I2` proves diagnostic denial is invoked and enforced | Correlated event, ENGINE decision, and host outcome |
-| 4 | [`I4`](#i4-classify-the-cause-and-publish-the-handoff) | completed `I3`, or an `I2` terminal transport result | Root-cause or bounded-unresolved handoff and restored state |
+| 1 | [`C1`](#c1-freeze-the-actual-acp-baseline) | reviewed plan and external prerequisites | Verified target identity and reviewed diagnostic package |
+| 2 | [`C2`](#c2-prove-discovery-trust-and-live-acp-transport) | `C1` | Attributed target-ACP lifecycle and transport evidence |
+| 3 | [`C3`](#c3-trace-the-engine-decision-through-acp) | `C2` proves handler invocation and enforced denial | Correlated ACP event, ENGINE decision, and host outcome |
+| 4 | [`C4`](#c4-classify-the-acp-cause-and-restore-state) | `C3`, or terminal classification from `C2` | ACP-specific handoff and restored inactive state |
 
-### I1: Freeze The Baseline And Build Bounded Diagnostics
+### C1: Freeze The Actual ACP Baseline
 
-State: `[x]`
+State: `[ ]`
 
-- **Resulting truth:** the exact baseline, session-mode matrix, canaries, and
-  diagnostic handler are fixed and fixture-verified before any live mutation.
+- **Resulting truth:** the exact IDEA Custom ACP command chain, live process
+  provenance, versions, hashes, source state, canaries, and diagnostic assets
+  are fixed and verified before live mutation.
 - **Predecessors:** none; reviewed plan and external prerequisites are required.
-- **Work:** verify hashes and inactive state; record official-contract access
-  date; enumerate only the relevant matching hook sources; implement the
-  bounded diagnostic handler, config, and fixtures; pre-resolve the temp path.
-- **Completion proof:** tests cover supported and malformed events, both handler
-  branches, ENGINE pass-through, fixed decision shapes, evidence allowlisting,
-  size limit, confidentiality, and cleanup without invoking Codex.
-- **Completion evidence:** On 2026-11-08, the official OpenAI Hooks contract was
-  rechecked at `https://learn.chatgpt.com/docs/hooks`. It still states that
-  unified exec matches `PreToolUse` as `Bash`, command hooks receive one JSON
-  object on stdin, Bash exposes `tool_input.command`, the documented
-  hook-specific deny shape and exit-code `2` path block supported calls, and
-  `/hooks` reviews and trusts an exact definition hash. No material contract
-  drift was found.
+- **Work:** verify the configured `codex-acp.cmd` path without editing IDEA;
+  resolve the NVM link; verify adapter and bundled Codex identities; distinguish
+  the target processes from standalone CLI and JetBrains-bundled processes;
+  recheck official contracts; inspect only relevant adapter hook-capability and
+  source-filter code; replace the known CLI-specific diagnostic metadata,
+  probes, evidence fields, session matrix, and assertions with ACP-specific
+  equivalents; then rerun and correct the authorized diagnostic fixtures.
+- **Completion proof:** the current conversation or a designated fresh control
+  chat has target provenance; fixtures cover supported and malformed events,
+  both handler branches, ENGINE pass-through, decision shapes, evidence
+  allowlisting, the 4 KiB cap, confidentiality, and cleanup without live hooks.
+- **Completion evidence:** pending execution.
 
-  HEAD `7e61c977a9a6ca67ebf8a6fbae13a4272866a3f2` contains required D1 commit
-  `20fcc53a3ec6b4dbecc110baa303f3e6ed7eb5fb`. The verified SHA-256 identities
-  remained `0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3`
-  for `hooks/pre_tool_use.mjs`,
-  `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`
-  for `hooks/policy.json`, and
-  `0ee2edb0ff7f4b35a24cd1099baf0dc86260911ee958a64aa070cd87af4d9879`
-  for production `hooks/hooks.json`. Independent Node reported `v25.0.0` and
-  Codex reported `codex-cli 0.159.0`. The exact user activation link was absent.
-  Symbolic-link capability was fixture-verified inside the pre-resolved,
-  initially empty task directory
-  `C:\Users\user\AppData\Local\Temp\codex-pretooluse-diagnostic-20261108-6f3a2c`.
+### C2: Prove Discovery, Trust, And Live ACP Transport
 
-  The relevant filesystem source scan found no inline user `PreToolUse`, no
-  project `.codex` hook source, and no installed plugin `hooks/hooks.json`;
-  production matcher `*` remained versioned but inactive because its exact user
-  link was absent. Live `/hooks` enumeration remains an I2 attribution check.
+State: `[ ]`
 
-  I1 added only the authorized diagnostic package and fixtures. The bounded
-  handler SHA-256 is
-  `6a1378d8574110241e239a77b210bb70f85d06bcb2c98d73f3304ff9244d7f64`;
-  exact transport and ENGINE-proxy definition hashes are respectively
-  `cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`
-  and `83c8dc83e8a53b95d48fce4e4150f87ac3c959056829b7f85f86a1a3846d3169`.
-  The fixed matrix covers fresh default exec, fresh ephemeral exec, and fresh
-  interactive mode, with the interactive mode skipped if it would persist
-  project trust. The benign, transport-deny, and ENGINE-proxy canaries retain
-  only lengths and SHA-256 identities in the probe specification.
+- **Resulting truth:** the target Custom ACP integration's discovery, trust,
+  process/session identity, live handler invocation, actual event shape,
+  diagnostic decision, and host enforcement are separately observed or bounded
+  at the first unavailable layer.
+- **Predecessor:** `C1`.
+- **Work:** install and verify the exact transport definition; start a new IDEA
+  Custom ACP chat; observe target-process provenance and the initialization
+  protocol/capabilities; verify that the negotiated `codexHooks` surface lists
+  the exact user-level definition despite the adapter's `sessionFlags` filter;
+  use only the trust action exposed by IDEA; after exact trust, start another
+  new target chat; run benign and deterministic transport-deny probes from that
+  chat; correlate bounded handler evidence with any ACP hook lifecycle events
+  and the host outcome.
+- **Completion proof:** exact target provenance is established for every live
+  probe and one route is selected: proceed to C3 only after an attributable
+  diagnostic deny is emitted and enforced, or proceed directly to C4 with the
+  smallest discovery, trust, transport, event-shape, or enforcement boundary.
+- **Stop conditions:** wrong host; missing negotiated capability; exact source
+  absent; no authorized target trust path; no handler invocation; invalid
+  documented input; emitted deny not enforced; competing hook/session influence
+  that cannot be isolated; or failed exact-link cleanup.
+- **Completion evidence:** pending execution.
 
-  `C:\nvm4w\nodejs\node.exe .\hooks\tests\diagnostics\run-tests.mjs`
-  exited `0` with `I1: 16 diagnostic fixture groups passed`. The fixtures cover
-  supported and malformed events, all allowlisted shape classes, exact deny
-  keys, invocation counting, unknown-shape confidentiality, the 4 KiB cap,
-  byte-for-byte ENGINE stdout/stderr and exit-status pass-through, non-zero
-  proxy results, and cleanup without invoking Codex. The existing ENGINE/D1
-  suite also exited `0` with
-  `E1/E2/E3: 67 fixture cases passed; D1: 8 deployment fixture cases passed`.
+### C3: Trace The ENGINE Decision Through ACP
 
-### I2: Prove Live Hook Transport
+State: `[ ]`
 
-State: `[x]`
+- **Resulting truth:** the exact ACP-delivered event, unchanged ENGINE result,
+  and target host outcome are correlated without modifying ENGINE or retaining
+  the command.
+- **Predecessor:** `C2` with attributable diagnostic invocation and enforced
+  deterministic denial.
+- **Work:** activate the exact ENGINE-proxy definition through the target ACP
+  trust lifecycle; start a new IDEA Custom ACP chat; run the harmless
+  discriminating canary; compare only allowlisted shape and decision metadata
+  with the direct fixture result; repeat once in another fresh target session.
+- **Completion proof:** ART-ACP-CAUSE selects exactly one supported layer or
+  identifies the smallest remaining ACP evidence gap.
+- **Completion evidence:** pending execution.
 
-- **Resulting truth:** discovery, exact trust, and host outcome are observed for
-  each attempted fresh-session mode; invocation, event shape, diagnostic
-  decision, and enforcement are either observed or bounded at the first absent
-  or incompatible transport layer.
-- **Predecessor:** `I1`.
-- **Work:** install and verify the exact diagnostic link; review through
-  `/hooks`; run a benign probe and the unique transport-deny probe; correlate
-  the bounded diagnostic record with the host result; do not run ENGINE proxy
-  until deterministic transport denial is attributable.
-- **Completion proof:** every attempted mode is classified without inferring
-  hook input from executor logs, and I2 records exactly one route: proceed to I3
-  only when a trusted handler invocation emits an attributable deterministic
-  deny that the host enforces, or proceed directly to I4 with a terminal
-  transport classification or the smallest bounded transport gap.
-- **Routing rule:** skip I3 and proceed to I4 if no mode invokes the trusted
-  handler, the documented input contract is violated, an attributable deny is
-  emitted but not enforced, or competing hook behavior cannot be isolated or
-  fully accounted for. Lifecycle recovery still removes the verified exact link
-  on any failure before execution stops.
-- **Completion evidence:** On 2026-11-08, the exact symbolic link to the
-  transport definition hash
-  `cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`
-  was installed and reviewed through `/hooks`. The review surface showed one
-  user `PreToolUse` definition, matcher `^Bash$`, the exact diagnostic command,
-  synchronous mode, and a five-second timeout. After exact-definition trust,
-  `/hooks` reported `Installed=1`, `Active=1`, no pending review, and no
-  competing hook.
+### C4: Classify The ACP Cause And Restore State
 
-  The fresh-session matrix produced this bounded result:
+State: `[ ]`
 
-  | Session mode | Benign host outcome | Transport-deny host outcome | Handler record |
-  |---|---|---|---|
-  | `exec-default-fresh` | `executed`, exit `0` | `executed`, exit `0` | absent for both probes |
-  | `exec-ephemeral-fresh` | `executed`, exit `0` | `executed`, exit `0` | absent for both probes |
-  | `interactive-fresh` | `hook-error` | `hook-error` | absent for both probes |
-
-  Both interactive probes reported hook process creation failure as bounded
-  reason `access-denied-os-error-5`; unified exec did not start in those
-  sessions. Interactive startup did not request or persist project-folder
-  trust. No mode produced diagnostic evidence, so no hook-boundary event shape
-  or handler decision exists to support I3. Executor output was used only to
-  classify host outcome and was not substituted for hook input.
-
-  I2 therefore selects the terminal `I4` route and bounds the unresolved layer
-  between an exact trusted active definition and diagnostic-handler process
-  start/invocation, with session-mode-dependent host handling. The ENGINE proxy
-  was not run. Recovery reverified the exact link type, target, and source hash,
-  removed only that link, and proved the target remained intact and the user
-  activation path was absent. The resolved task temp directory remains present
-  for I4 cleanup and contains zero probe records.
-
-### I3: Trace The ENGINE Decision Path
-
-State: `[N/A]` under I2's terminal transport routing rule.
-
-- **Resulting truth:** the exact live event, unchanged ENGINE result, and host
-  outcome are correlated without modifying ENGINE or retaining the command.
-- **Predecessor:** `I2` with an attributable diagnostic deny that the host
-  enforced.
-- **Work:** run the transparent ENGINE-proxy branch with the harmless
-  discriminating canary; compare only allowlisted shape classes and decision
-  metadata with the direct fixture result; repeat once in a fresh session to
-  exclude one-off state.
-- **Completion proof:** the ART-CAUSE decision tree selects exactly one supported
-  layer or identifies the smallest remaining evidence gap.
-- **Completion evidence:** Not applicable. I2 produced no attributable handler
-  invocation or enforced diagnostic denial, so I3's predecessor was not
-  satisfied and the ENGINE-proxy branch was not run.
-
-### I4: Classify The Cause And Publish The Handoff
-
-State: `[x]`
-
-- **Resulting truth:** the investigation has an evidence-backed conclusion,
-  all live diagnostic state is removed, and correction work has a correctly
-  scoped next authority.
-- **Predecessor:** completed `I3`, or `I2` with a recorded terminal transport
-  route.
-- **Work:** remove only the verified diagnostic link; prove inactive behavior;
-  record and verify the sanitized matrix and cause classification in this plan;
-  then remove the resolved temp directory; prepare but do not submit an
-  issue-ready reproduction if the host is implicated.
+- **Resulting truth:** the investigation has an ACP-specific evidence-backed
+  conclusion, all live diagnostic state is removed, and correction work has a
+  correctly scoped next authority.
+- **Predecessor:** completed `C3`, or `C2` with a recorded terminal route.
+- **Work:** remove only the verified diagnostic link; start a new target ACP
+  chat; prove inactive behavior; remove the resolved temp directory; record the
+  sanitized matrix and cause classification; prepare but do not submit an
+  issue-ready reproduction if the ACP host or adapter is implicated.
 - **Follow-up routing:** ENGINE incompatibility requires a new DELIVERY Gate and
-  plan; Codex host behavior requires an external issue or version-compatibility
-  decision; configuration or trust mismatch requires a new exact-version
-  DEPLOYMENT plan. This investigation authorizes none of those corrections.
+  plan; ACP adapter or bundled Codex behavior requires an external issue or an
+  exact-version compatibility decision; missing ACP capability, exact-source
+  exposure, or trust support requires an ACP compatibility or deployment-design
+  revision. This investigation authorizes none of those corrections.
 - **Completion proof:** link absent, transient evidence removed, excluded files
-  unchanged, and every conclusion maps to recorded bounded evidence.
-- **Completion evidence:** I2's sanitized matrix selects ART-CAUSE's
-  `diagnostic handler is not invoked` branch. Exact discovery and trust were
-  observed through `/hooks`, matcher `^Bash$` and the exact definition hash were
-  verified, and no competing hook was present. Nevertheless, both fresh
-  noninteractive modes executed the synthetic canaries with exit `0` and no
-  handler record, while both fresh interactive probes stopped before unified
-  exec with bounded hook error `access-denied-os-error-5` and no handler record.
-
-  The supported conclusion is therefore not a root cause: the smallest
-  unresolved boundary is after exact trusted-definition activation and before
-  diagnostic-handler process start or invocation, with session-mode-dependent
-  Codex 0.159.0 host handling. No hook-boundary event shape or decision was
-  observed, so executor evidence was not treated as hook input and ENGINE was
-  not implicated.
-
-  An issue-ready reproduction is prepared but was not submitted:
-
-  1. On Windows with Codex CLI `0.159.0` and independent Node `v25.0.0`, expose
-     the reviewed transport definition hash
-     `cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`
-     at the exact user hook link.
-  2. Use `/hooks` to verify one installed and active `PreToolUse` definition,
-     matcher `^Bash$`, synchronous mode, five-second timeout, and no competing
-     hook, then trust that exact definition.
-  3. In fresh default and ephemeral noninteractive sessions, invoke the benign
-     and transport canaries identified in `probe-spec.json`; observe command
-     exit `0`, no diagnostic record, and no enforced deny.
-  4. Repeat the two probes in fresh interactive sessions; observe bounded hook
-     process-creation error `access-denied-os-error-5`, no unified exec start,
-     and no diagnostic record.
-  5. Reverify and remove only the exact link, then confirm inactive behavior.
-
-  With the link absent, a fresh ephemeral inactive canary of length `39` and
-  SHA-256
-  `56738337eab7db5c0e44824d29bf2a518373d26375ef9dded84cf4e48760f957`
-  completed exactly one unified exec with status `completed`, exit `0`, zero
-  output characters, and zero diagnostic records. The exact task directory was
-  still empty, its resolved path was reverified, and only that directory was
-  removed. The user activation link and task directory are both absent.
+  unchanged, all retained live evidence has target provenance, and every
+  conclusion maps to bounded ACP-specific evidence.
+- **Completion evidence:** pending execution.
 
 ### Final Conformance
 
-After every applicable step is complete, with I3 either complete or explicitly
-recorded as not applicable under I2's routing rule:
+After every applicable step is complete, with `C3` either complete or explicitly
+not applicable under `C2`'s routing rule:
 
-1. confirm every retained field satisfies ART-DIAGNOSTIC and the 4 KiB cap;
-2. confirm ART-CAUSE selects one supported classification or explicitly bounded
-   unresolved layer;
-3. confirm executor evidence was not substituted for hook-boundary evidence;
-4. confirm ENGINE, policy, production config, D2, intent, README, ACCEPTANCE,
-   Codex configuration, project trust, and installation did not change;
-5. confirm the exact user activation link is absent and inactive behavior was
-   observed in a fresh session; and
-6. confirm no transient diagnostic evidence remains outside tracked authorized
+1. confirm every live probe resolves to the configured NVM Custom ACP chain;
+2. confirm no evidence from standalone CLI or JetBrains-bundled ACP was used;
+3. confirm every retained field satisfies ART-ACP-EVIDENCE and the 4 KiB cap;
+4. confirm ART-ACP-CAUSE selects one supported classification or explicitly
+   bounded unresolved ACP layer;
+5. confirm handler records, ACP lifecycle events, and host outcomes were
+   correlated without substituting one evidence source for another;
+6. confirm ENGINE, policy, production config, D2, intent, README, ACCEPTANCE,
+   IDEA, Custom ACP configuration, Codex configuration, project trust, packages,
+   and installations did not change;
+7. confirm the exact user activation link is absent and inactive behavior was
+   observed in a fresh target ACP session; and
+8. confirm no transient diagnostic evidence remains outside tracked authorized
    artifacts.
 
 #### Final Conformance Evidence
 
-Final conformance completed on 2026-11-08 for Codex CLI `0.159.0` on Windows
-with independent Node `v25.0.0`:
+Pending execution. Record exact target-command provenance, versions and hashes,
+sanitized ACP session matrix, discovery and trust observations, handler
+invocation and decision classes, available lifecycle events, host outcomes,
+rollback proof, retained-file inventory, and selected follow-up route.
 
-- The sanitized I2 matrix records `executed`/exit `0` for both noninteractive
-  modes and `hook-error`/`access-denied-os-error-5` for interactive mode. All
-  six live probes have invocation count `0`, decision class `unknown`, and no
-  retained per-probe record. The fresh inactive probe records one completed
-  command, exit `0`, zero output characters, and zero diagnostic records.
-- ART-CAUSE selects the handler-not-invoked branch and stops at the bounded
-  trusted-definition-to-process-start/invocation boundary. No executor trace
-  was used as hook input, and no unsupported event-shape or ENGINE conclusion
-  was made.
-- Production identities remain
-  `0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3`
-  for `hooks/pre_tool_use.mjs`,
-  `5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046`
-  for `hooks/policy.json`, and
-  `0ee2edb0ff7f4b35a24cd1099baf0dc86260911ee958a64aa070cd87af4d9879`
-  for production `hooks/hooks.json`.
-- The retained tracked diagnostic inventory is
-  `hooks.engine-proxy.json`
-  (`83c8dc83e8a53b95d48fce4e4150f87ac3c959056829b7f85f86a1a3846d3169`),
-  `hooks.transport-deny.json`
-  (`cc34cde3fdc2b78e17236da4f12c84302777f83863714d9813002b2945530f65`),
-  `pre_tool_use_diagnostic.mjs`
-  (`6a1378d8574110241e239a77b210bb70f85d06bcb2c98d73f3304ff9244d7f64`),
-  `probe-spec.json`
-  (`9ddc2f93f76776fde2feda0830c6897adcc99afe8a7dc005aeb33e2a34c015e3`),
-  and `run-tests.mjs`
-  (`7aa8d4501ee6fc216fd7ba230d871acc1a6bf285111774fad51722dcbe03b88a`).
-  No live probe record or other transient diagnostic evidence remains.
-- The exact user link is absent, the resolved task temp directory is absent,
-  and the inactive canary proved the restored behavior. Exact-definition trust
-  was the only Codex-managed mutation and is inactive without its source link.
-  No Codex configuration, project-folder trust, or installation change was
-  performed; the installed CLI still reports `0.159.0`.
-- Relative to execution baseline `7e61c977a9a6ca67ebf8a6fbae13a4272866a3f2`,
-  repository changes are limited to the authorized tracked diagnostic package,
-  diagnostic fixtures, and this plan. ENGINE, policy, production config, D2,
-  intent, README, and ACCEPTANCE remain unchanged.
-- `C:\nvm4w\nodejs\node.exe .\hooks\tests\diagnostics\run-tests.mjs`
-  passed all `16` diagnostic fixture groups, including the 4 KiB evidence cap
-  and confidentiality checks. The existing suite passed `67` ENGINE cases and
-  `8` D1 deployment cases.
+## Independent Review Record
 
-The selected follow-up is an external Codex host issue or exact-version
-compatibility decision using the prepared bounded reproduction. No issue was
-submitted and no correction, D2 completion, upgrade, or downgrade was
-authorized or performed.
+Independent REVIEW verified the prior-result invalidation, target ACP identity,
+official-contract baseline, installed adapter capability and filtering behavior,
+known CLI-specific diagnostic assets and their mandatory C1 replacement,
+evidence allowlist, cause tree, writable boundary, diagnostic proxy
+transparency, fresh-process feasibility, target-only trust path, rollback
+lifecycle, execution order, and proof obligations.
 
-## Review Verdict
+Review evidence on 2026-11-08:
 
-Independent REVIEW verified the official-contract baseline, evidence allowlist,
-cause tree, writable boundary, diagnostic proxy transparency, session-mode
-feasibility, rollback path, conditional execution order, and proof obligations.
-The execution verdict is `COMPLETE — BOUNDED UNRESOLVED`; the smallest supported
-boundary and follow-up route are recorded above.
+- the configured NVM shim, adapter `2.5.0`, ACP entry module, and bundled Codex
+  `0.165.0` match the recorded paths, versions, and hashes;
+- bounded adapter inspection confirmed the ACP-v1-only `codexHooks` capability,
+  `_codex/hooks/list`, `_codex/hooks/trust`, and `sessionFlags` source filter;
+- a sanitized process check found configured-NVM and JetBrains-runtime
+  `codex-acp` processes alive concurrently, confirming that every live probe
+  needs the plan's PID, parent PID, start-time, path, and fresh-session
+  attribution rather than version matching alone;
+- the official hooks and App Server contracts do not claim that IDEA negotiated
+  or exposed those adapter facilities;
+- the existing diagnostic definitions, probe specification, handler fields, and
+  fixtures retain CLI `0.159.0` assumptions, and C1 now explicitly owns their
+  ACP-specific replacement before any live activation;
+- static proxy inspection confirms raw stdin, stdout, stderr, and exit status are
+  preserved for the bounded ENGINE canary path while retained evidence remains
+  allowlisted and capped; and
+- writable scope, recovery, transition routing, local links, status
+  coordination, whitespace, and final-newline checks pass.
+
+Review verdict: `Ready for execution`.

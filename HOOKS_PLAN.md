@@ -13,7 +13,7 @@ Child plan navigation:
 Follow-up investigation navigation:
 
 - [`PRETOOLUSE-DIAGNOSTIC`](plans/HOOKS_PRETOOLUSE_DIAGNOSTIC_PLAN.md) —
-  `Ready for execution` after independent review.
+  ACP-specific `Ready for execution` investigation authority.
 
 No child plan is executable until an independent complete-plan review publishes
 `Ready for execution` for that child.
@@ -90,7 +90,9 @@ Unmapped scope: none.
 
 ### Aggregate State
 
-Aggregate Planning Gate state: `READY`.
+Aggregate Planning Gate state: `READY`. ENGINE remains completed; DEPLOYMENT is
+ready for its remaining D2 transition; ACCEPTANCE remains gated by a completed
+DEPLOYMENT handoff.
 
 Implementation planning is allowed only against each child-owned `READY`
 result. The aggregate parent is not permitting authority.
@@ -124,9 +126,10 @@ authorizes mutation of ENGINE, DEPLOYMENT, or `HOOKS_INTENT.md`.
 
 ## Review Handoff
 
-The reviewed PRETOOLUSE-DIAGNOSTIC follow-up investigates the failed live denial
-proof without changing the original child graph or authorizing correction. Its
-separate review published `Ready for execution`.
+The reviewed PRETOOLUSE-DIAGNOSTIC follow-up targets the actual IDEA Custom ACP
+client. Its prior standalone-CLI result is invalid for that host. The ready
+replacement does not change the original child graph or authorize correction;
+it permits only its bounded characterization steps.
 
 Independent REVIEW must evaluate each linked child plan separately against its
 own Gate result, writable boundary, prerequisites, transition order, proof
