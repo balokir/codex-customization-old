@@ -1,7 +1,7 @@
 # Codex Customization
 
-User-level instructions and `PreToolUse` guardrails for an independently
-installed Codex ACP agent, including IntelliJ IDEA's Custom ACP Agent.
+User-level instructions and `PreToolUse`/`PostToolUse` guardrails for an
+independently installed Codex ACP agent, including IntelliJ IDEA Custom ACP.
 
 ## Install (Windows)
 
@@ -26,8 +26,8 @@ the stable links, so Codex does not need to resolve Node from the IDE's PATH.
 Existing destinations are never overwritten. Repeating install is safe.
 
 Restart Codex (or create a new IDEA Custom ACP chat). Open `/hooks` in the
-bundled Codex CLI, verify the installed `PreToolUse` definition, and trust
-it if prompted. Never bypass hook trust.
+bundled Codex CLI, verify both installed hook definitions, and trust
+them if prompted. Never bypass hook trust.
 
 If you move the checkout or replace your Node installation, uninstall
 using the old checkout first, then install again with the new one.
@@ -67,6 +67,28 @@ path through IDEA Custom ACP. They do not establish coverage for every
 supported tool shape or policy rule. The uninstall/inactive-state test for
 this portable installation has not yet been run; the previous diagnostic
 installation was separately tested for clean deactivation.
+
+## PostToolUse truncation guardrail
+
+For Codex shell tool `Bash`, the production `PostToolUse` looks for
+Codex's own `Warning: truncated output (original token count: N)`
+in the completed text result. On detection it returns `decision: "block"`
+and asks the agent to retry with smaller, bounded output. Other results
+pass through without output. No `AGENTS.md` instruction or diagnostic
+logging is required.
+
+This deliberately covers only the verified Codex shell warning format.
+The hook cannot undo side effects of a completed command or guarantee the
+CLI hides all printed lines. A file containing the exact standalone
+warning could trigger a false positive; an unfamiliar truncation format
+or an oversized hook event (>1 MiB) is not caught. The original
+`PreToolUse` remains unchanged.
+
+In a separate `CODEX_HOME` without `AGENTS.md` and with only this
+kind of `PostToolUse` handler, Codex CLI v0.165.0 and IDEA Custom ACP
+both returned a block after a 6000-row output, and the agent independently
+retried with a short result. The universal production variant requires
+a fresh-session smoke test after installation.
 
 ## Isolated PostToolUse truncation experiment
 
@@ -133,5 +155,5 @@ Historical planning and diagnostic records remain in `plans/` and
 `HOOKS_PLAN.md`. They are reference material rather than mandatory workflow
 for routine maintenance.
 
-The hook is a best-effort guardrail for bounded reads and names-only
-`ALL_TOOLS` discovery; it is not a security sandbox.
+The hooks are best-effort guardrails for output completeness, bounded
+reads, and names-only `ALL_TOOLS` discovery; they are not a security sandbox.

@@ -513,6 +513,17 @@ const deploymentConfig = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
 const matcherGroup = deploymentConfig.hooks?.PreToolUse?.[0];
 const deploymentHandler = matcherGroup?.hooks?.[0];
 const SETUP = fileURLToPath(new URL("../setup.mjs", import.meta.url));
+const POST_TEST = fileURLToPath(new URL("./post_tool_use.test.mjs", import.meta.url));
+const postGroup = deploymentConfig.hooks?.PostToolUse?.[0];
+const postHandler = postGroup?.hooks?.[0];
+assert.equal(postGroup?.matcher, "^Bash$");
+assert.equal(postHandler?.type, "command");
+assert.equal(postHandler?.timeout, EXPECTED_TIMEOUT_SECONDS);
+assert.equal(postHandler?.command?.includes("codex-customization-hooks/post_tool_use.mjs"), true);
+assert.equal(postHandler?.commandWindows?.includes("codex-customization-hooks\\post_tool_use.mjs"), true);
+assert.equal(postHandler?.commandWindows?.includes("C:\\nvm4w"), false);
+assert.equal(postHandler?.commandWindows?.includes("C:\\work"), false);
+
 
 assert.deepEqual(Object.keys(deploymentConfig).sort(), ["description", "hooks"]);
 assert.equal(matcherGroup.matcher, "*");
@@ -587,6 +598,26 @@ try {
   const blocked = hook(denied);
   assert.equal(blocked.status, 0, blocked.stderr);
   assert.equal(JSON.parse(blocked.stdout).hookSpecificOutput.permissionDecision, "deny");
+  const postArgs = process.platform === "win32"
+    ? ["-NoProfile", "-NonInteractive", "-Command", postHandler.commandWindows]
+    : ["-c", postHandler.command];
+  function postHook(response) {
+    return spawnSync(shell, postArgs, {
+      input: JSON.stringify({
+        ...safeEnvelope, hook_event_name: "PostToolUse",
+        tool_response: response,
+      }),
+      env: { ...process.env, CODEX_HOME: fixtureRoot },
+      encoding: "utf8", windowsHide: true,
+    });
+  }
+  const postAllowed = postHook("normal complete output");
+  assert.equal(postAllowed.status, 0, postAllowed.stderr);
+  assert.equal(postAllowed.stdout, "");
+  const postBlocked = postHook("Warning: truncated output (original token count: 15843)\nTotal output lines: 6001\n");
+  assert.equal(postBlocked.status, 0, postBlocked.stderr);
+  assert.equal(JSON.parse(postBlocked.stdout).decision, "block");
+
 
   assertSetup("uninstall");
   assertSetup("uninstall");
@@ -599,5 +630,11 @@ try {
 } finally {
   rmSync(fixtureRoot, { recursive: true, force: true });
 }
+
+const postSuite = spawnSync(process.execPath, [POST_TEST], {
+  encoding: "utf8", windowsHide: true,
+});
+assert.equal(postSuite.status, 0, postSuite.stderr);
+process.stdout.write(postSuite.stdout);
 
 console.log("E1/E2/E3: 67 fixture cases passed; portable hook install and smoke tests passed");
