@@ -418,7 +418,7 @@ const SETUP = fileURLToPath(new URL("../setup.mjs", import.meta.url));
 const POST_TEST = fileURLToPath(new URL("./post_tool_use.test.mjs", import.meta.url));
 const postGroup = deploymentConfig.hooks?.PostToolUse?.[0];
 const postHandler = postGroup?.hooks?.[0];
-assert.equal(postGroup?.matcher, "^Bash$");
+assert.equal(postGroup?.matcher, "*");
 assert.equal(postHandler?.type, "command");
 assert.equal(postHandler?.timeout, EXPECTED_TIMEOUT_SECONDS);
 assert.equal(postHandler?.command?.includes("codex-customization-hooks/post_tool_use.mjs"), true);
@@ -519,6 +519,11 @@ try {
   const postBlocked = postHook("Warning: truncated output (original token count: 15843)\nTotal output lines: 6001\n");
   assert.equal(postBlocked.status, 0, postBlocked.stderr);
   assert.equal(JSON.parse(postBlocked.stdout).decision, "block");
+  const postObjectBlocked = postHook({
+    content: [{ type: "text", text: "Warning: truncated output (original token count: 15843)\nTotal output lines: 6001" }],
+  });
+  assert.equal(postObjectBlocked.status, 0, postObjectBlocked.stderr);
+  assert.equal(JSON.parse(postObjectBlocked.stdout).decision, "block");
 
 
   assertSetup("uninstall");

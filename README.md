@@ -1,6 +1,6 @@
 # Codex Customization
 
-User-level Codex ACP guardrails: `PostToolUse` detects truncated Bash
+User-level Codex ACP guardrails: `PostToolUse` checks received tool
 results; `PreToolUse` checks structured MCP reads and `ALL_TOOLS` discovery.
 Supports IntelliJ IDEA Custom ACP Agent.
 
@@ -72,18 +72,23 @@ installation was separately tested for clean deactivation.
 
 ## PostToolUse truncation guardrail
 
-For Codex shell tool `Bash`, the production `PostToolUse` looks for
-Codex's own `Warning: truncated output (original token count: N)`
-in the completed text result. On detection it returns `decision: "block"`
+The production `PostToolUse` uses matcher `*`, accepting events from
+any tool for which the host supports this lifecycle hook. It checks string
+results, text in recognized structured response fields (including MCP-style
+`content` arrays), and explicit output-truncation flags. Its primary
+verified signal is Codex's own `Warning: truncated output (original token
+count: N)`. On detection it returns `decision: "block"`
 and asks the agent to retry with smaller, bounded output. Other results
 pass through without output. No `AGENTS.md` instruction or diagnostic
 logging is required.
 
-This deliberately covers only the verified Codex shell warning format.
-The hook cannot undo side effects of a completed command or guarantee the
-CLI hides all printed lines. A file containing the exact standalone
-warning could trigger a false positive; an unfamiliar truncation format
-or an oversized hook event (>1 MiB) is not caught. `PreToolUse` now
+Wildcard matching does **not** mean every tool emits `PostToolUse`.
+The verified end-to-end scenario is Codex `Bash` on CLI and IDEA ACP;
+structured MCP and other tools have fixture coverage only and require
+separate host verification. The hook cannot undo completed tool side effects
+or guarantee the CLI hides all printed lines. A result containing the exact
+standalone warning could trigger a false positive; an unfamiliar truncation
+format or an oversized hook event (>1 MiB) is not caught. `PreToolUse` now
 leaves Bash read/search output sizing to `PostToolUse`, while retaining
 structured MCP read checks and `ALL_TOOLS` discovery rules.
 
@@ -158,6 +163,6 @@ Historical planning and diagnostic records remain in `plans/` and
 `HOOKS_PLAN.md`. They are reference material rather than mandatory workflow
 for routine maintenance.
 
-The hooks are best-effort guardrails for shell output completeness,
+The hooks are best-effort guardrails for tool output completeness,
 structured MCP reads, and names-only `ALL_TOOLS` discovery; they are not
 a security sandbox.

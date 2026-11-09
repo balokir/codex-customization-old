@@ -14,8 +14,7 @@ let cases = 0;
 function invoke(input) {
   const result = spawnSync(process.execPath, [HOOK], {
     input: typeof input === "string" ? input : JSON.stringify(input),
-    encoding: "utf8",
-    windowsHide: true,
+    encoding: "utf8", windowsHide: true,
   });
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stderr, "");
@@ -23,31 +22,51 @@ function invoke(input) {
 }
 function allow(label, payload) {
   assert.equal(invoke(payload), "", label);
-  cases++;
+  cases += 1;
 }
-function deny(label, payload) {
-  const result = invoke(payload);
-  const output = JSON.parse(result);
+function block(label, payload) {
+  const stdout = invoke(payload);
+  const output = JSON.parse(stdout);
   assert.deepEqual(Object.keys(output), ["decision", "reason"], label);
   assert.equal(output.decision, "block", label);
   assert.match(output.reason, /truncated.*incomplete/u, label);
-  assert.equal(result.includes("notes.txt"), false, label);
-  cases++;
+  assert.equal(stdout.includes("notes.txt"), false, label);
+  cases += 1;
 }
-allow("normal output", base);
-deny("truncation warning", { ...base, tool_response: warning });
-deny("warning after command metadata", { ...base, tool_response: "Wall time: 2.0s\nOutput:\n" + warning });
-deny("CRLF warning", { ...base, tool_response: warning.replaceAll("\n", "\r\n") });
-deny("no special canary required", { ...base, tool_input: { command: "Get-Content server.log" }, tool_response: warning });
+allow("ordinary Bash output", base);
+block("Bash warning", { ...base, tool_response: warning });
+block("Bash warning after metadata", { ...base, tool_response: "Wall time: 1s\nOutput:\n" + warning });
+block("CRLF warning", { ...base, tool_response: warning.replaceAll("\n", "\r\n") });
+block("other command name", { ...base, tool_name: "exec_command", tool_response: warning });
+block("functions.exec text result", { ...base, tool_name: "functions.exec", tool_response: warning });
+block("structured MCP content", {
+  ...base, tool_name: "mcp__example__read_file",
+  tool_response: { content: [{ type: "text", text: warning }], isError: false },
+});
+block("structured MCP result nesting", {
+  ...base, tool_name: "mcp__example__read_file",
+  tool_response: { result: { content: [{ type: "text", text: warning }] } },
+});
+block("object stdout", { ...base, tool_response: { stdout: warning } });
+block("object output", { ...base, tool_response: { output: warning } });
+block("array of content blocks", { ...base, tool_response: [{ type: "text", text: warning }] });
+block("structured output-truncated flag", { ...base, tool_response: { output_truncated: true, output: "short" } });
+block("structured is-output-truncated flag", { ...base, tool_response: { result: { is_output_truncated: true } } });
+block("structured camelCase flag", { ...base, tool_response: { isOutputTruncated: true } });
+allow("normal MCP content", { ...base, tool_response: { content: [{ type: "text", text: "complete" }] } });
+allow("normal functions.exec response", { ...base, tool_name: "functions.exec", tool_response: { output: "complete" } });
+allow("generic truncated field is application data", { ...base, tool_response: { truncated: true, content: "complete" } });
+allow("unrelated domain text is not tool output", { ...base, tool_response: { description: warning } });
+allow("marker only in tool_input", { ...base, tool_input: { command: warning }, tool_response: "complete" });
+allow("marker only in unrelated metadata", { ...base, private_note: warning });
 allow("normal phrase", { ...base, tool_response: "output was truncated earlier" });
-allow("warning is not a standalone line", { ...base, tool_response: "log: Warning: truncated output (original token count: 15843)\nTotal output lines: 6001" });
-allow("quoted source line", { ...base, tool_response: "const x = 'Warning: truncated output (original token count: 15843)';" });
-allow("no token count", { ...base, tool_response: "Warning: truncated output" });
-allow("wrong hook event", { ...base, hook_event_name: "PreToolUse", tool_response: warning });
-allow("wrong tool", { ...base, tool_name: "functions.exec", tool_response: warning });
-allow("unexpected response object", { ...base, tool_response: { output: warning } });
-allow("missing response", { ...base, tool_response: undefined });
-allow("malformed JSON", "{not-json");
-allow("oversized event", "x".repeat(1024 * 1024 + 1));
+allow("warning not standalone", { ...base, tool_response: "log: " + warning });
+allow("warning in quoted source", { ...base, tool_response: "const x = 'Warning: truncated output (original token count: 15843)';" });
+allow("missing token count", { ...base, tool_response: "Warning: truncated output" });
+allow("wrong event", { ...base, hook_event_name: "PreToolUse", tool_response: warning });
+allow("no response", { ...base, tool_response: undefined });
+allow("null response", { ...base, tool_response: null });
+allow("malformed input", "{not-json");
+allow("oversized input", "x".repeat(1024 * 1024 + 1));
 allow("empty input", "");
 console.log("PostToolUse output completeness: " + cases + " fixtures passed");
