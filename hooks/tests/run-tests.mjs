@@ -19,7 +19,7 @@ const ENGINE_PATH = fileURLToPath(ENGINE_URL);
 const POLICY_PATH = fileURLToPath(new URL("../policy.json", import.meta.url));
 const CONFIG_PATH = fileURLToPath(new URL("../hooks.json", import.meta.url));
 const EXPECTED_ENGINE_SHA256 =
-  "0b15771495bd4164ebd5db9c28f4980fa14758b76924fc9684faa055d09518e3";
+  "8f4c6eb2b877ca610b776a082757c412ba6930e2292608c91c266e593b19bd4c";
 const EXPECTED_POLICY_SHA256 =
   "5959c76e353c0be962ebe60e0efc5ccffaba98509794220afdff651544aef046";
 const EXPECTED_TIMEOUT_SECONDS = 5;
@@ -151,149 +151,51 @@ assertGuidance("invalid supported tool input", {
 });
 assertGuidance("oversized envelope", "x".repeat(65537) + SECRET_PAYLOAD + SECRET_METADATA);
 
-assertEmpty("size probe", {
+// Shell read/search volume is checked from actual output by PostToolUse.
+// PreToolUse must not reject calls on guessed file size or operation count.
+assertEmpty("shell file size probe", {
   ...safeEnvelope,
-  tool_input: {
-    command: "Get-Item -LiteralPath 'C:\\fixtures\\build.log' | Select-Object Length",
-  },
+  tool_input: { command: "Get-Item -LiteralPath 'server.log' | Select-Object Length" },
 });
-assertEmpty("line-count probe", {
+assertEmpty("read AGENTS.md without a special-case deny", {
   ...safeEnvelope,
-  tool_input: {
-    command: "(Get-Content -LiteralPath 'C:\\fixtures\\build.log').Count",
-  },
+  tool_input: { command: "Get-Content -Raw -LiteralPath 'AGENTS.md'" },
 });
-assertEmpty("producer-bounded quoted read", {
+assertEmpty("read log without preemptive filename deny", {
   ...safeEnvelope,
-  tool_input: {
-    command: "Get-Content -LiteralPath 'C:\\fixtures\\build.log' -TotalCount 40",
-  },
+  tool_input: { command: "Get-Content -Raw 'server.log'" },
 });
-assertEmpty("producer-bounded range read", {
+assertEmpty("multiple shell reads without blanket deny", {
   ...safeEnvelope,
-  tool_input: {
-    command: "(Get-Content -LiteralPath 'C:\\fixtures\\build.log')[20..39]",
-  },
+  tool_input: { command: "Get-Content first.txt; Get-Content second.txt" },
+});
+assertEmpty("broad rg search without blanket deny", {
+  ...safeEnvelope,
+  tool_input: { command: "rg -n 'test' ." },
+});
+assertEmpty("dynamic shell target", {
+  ...safeEnvelope,
+  tool_input: { command: "Get-Content -LiteralPath $fixturePath" },
+});
+assertEmpty("max_output_tokens is not a PreToolUse shell rule", {
+  ...safeEnvelope,
+  tool_input: { command: "Get-Content -Raw 'AGENTS.md'", max_output_tokens: 10 },
+});
+assertEmpty("bounded shell read", {
+  ...safeEnvelope,
+  tool_input: { command: "Get-Content -LiteralPath 'server.log' -TotalCount 30" },
 });
 assertEmpty("structured bounded read", {
   ...safeEnvelope,
   tool_name: "mcp__fixture__read_file",
-  tool_input: {
-    path: "C:\\fixtures\\build.log",
-    offset: 20,
-    limit: 20,
-  },
+  tool_input: { path: "C:\\fixtures\\build.log", offset: 20, limit: 20 },
 });
 assertEmpty("unrelated structured tool", {
   ...safeEnvelope,
   tool_name: "mcp__fixture__write_file",
-  tool_input: {
-    path: "C:\\fixtures\\build.log",
-    content: "bounded fixture",
-  },
+  tool_input: { path: "C:\\fixtures\\build.log", content: "bounded fixture" },
 });
-assertGuidance("missing file with unknown size", {
-  ...safeEnvelope,
-  tool_input: {
-    command: "Get-Content -LiteralPath 'C:\\fixtures\\missing.txt'",
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertGuidance("dynamic shell path", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content -LiteralPath $fixturePath # ${SECRET_PAYLOAD}`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertGuidance("unknown complete read with unavailable probe history", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content -LiteralPath 'C:\\fixtures\\notes.txt' # ${SECRET_PAYLOAD}`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("quoted complete known-large read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content -LiteralPath "C:\\fixtures\\build.log" # ${SECRET_PAYLOAD}`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("multiple complete reads", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content 'first.txt'; Get-Content 'second.txt' # ${SECRET_PAYLOAD}`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("mixed bounded and unbounded multi-read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content 'first.log' -TotalCount 10; Get-Content 'second.log' # ${SECRET_PAYLOAD}`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("multi-path complete read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content -LiteralPath 'first.log','second.log' # ${SECRET_PAYLOAD}`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("broad search", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `rg -n '${SECRET_PAYLOAD}' .`,
-    max_output_tokens: 20,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertGuidance("unbounded scoped search", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `rg -n '${SECRET_PAYLOAD}' 'C:\\fixtures\\notes.txt'`,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("consumer-only limit does not bound known-large read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: `Get-Content -LiteralPath 'C:\\fixtures\\build.log' # ${SECRET_PAYLOAD}`,
-    max_output_tokens: 20,
-  },
-  private_metadata: SECRET_METADATA,
-});
-assertDeny("unrelated later size probe does not authorize read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: "Get-Content 'AGENTS.md'; Get-Item 'other.txt' | Select-Object Length",
-  },
-});
-assertDeny("unrelated later output limit does not authorize read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: "Get-Content 'AGENTS.md'; Write-Output x | Select-Object -First 10",
-  },
-});
-assertDeny("unrelated pipeline size probe does not authorize read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: "Get-Content 'AGENTS.md' | Get-Item 'other.txt' | Select-Object Length",
-  },
-});
-assertDeny("non-adjacent pipeline limit does not authorize read", {
-  ...safeEnvelope,
-  tool_input: {
-    command: "Get-Content 'AGENTS.md' | Write-Output x | Select-Object -First 10",
-  },
-});
-assertGuidance("known-high-volume name outside read statement is ignored", {
-  ...safeEnvelope,
-  tool_input: {
-    command: "Write-Output 'AGENTS.md'; Get-Content 'notes.txt'",
-  },
-});
+
 assertGuidance("structured read missing path", {
   ...safeEnvelope,
   tool_name: "mcp__fixture__read_file",
@@ -575,7 +477,7 @@ try {
   assert.equal(realpathSync(links[2]), realpathSync(process.execPath));
 
   const safe = { ...safeEnvelope, tool_input: { command: "Write-Output 'ok'" } };
-  const denied = {
+  const formerlyDenied = {
     ...safeEnvelope,
     tool_input: { command: "Get-Content -Raw -LiteralPath 'AGENTS.md'" },
   };
@@ -595,9 +497,9 @@ try {
   const allowed = hook(safe);
   assert.equal(allowed.status, 0, allowed.stderr);
   assert.equal(allowed.stdout, "");
-  const blocked = hook(denied);
-  assert.equal(blocked.status, 0, blocked.stderr);
-  assert.equal(JSON.parse(blocked.stdout).hookSpecificOutput.permissionDecision, "deny");
+  const readAllowed = hook(formerlyDenied);
+  assert.equal(readAllowed.status, 0, readAllowed.stderr);
+  assert.equal(readAllowed.stdout, "");
   const postArgs = process.platform === "win32"
     ? ["-NoProfile", "-NonInteractive", "-Command", postHandler.commandWindows]
     : ["-c", postHandler.command];
@@ -637,4 +539,4 @@ const postSuite = spawnSync(process.execPath, [POST_TEST], {
 assert.equal(postSuite.status, 0, postSuite.stderr);
 process.stdout.write(postSuite.stdout);
 
-console.log("E1/E2/E3: 67 fixture cases passed; portable hook install and smoke tests passed");
+console.log("E1/E2/E3: fixture cases passed; portable hooks install and smoke tests passed");

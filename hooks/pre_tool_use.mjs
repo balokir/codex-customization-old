@@ -119,118 +119,6 @@ function countMatches(source, pattern) {
   return Array.from(source.matchAll(pattern)).length;
 }
 
-function maskShellQuotedAndCommentText(source) {
-  let masked = "";
-  let quote = null;
-  let comment = false;
-
-  for (let index = 0; index < source.length; index += 1) {
-    const character = source[index];
-    const previous = index > 0 ? source[index - 1] : "";
-
-    if (comment) {
-      if (character === "\n" || character === "\r") {
-        comment = false;
-        masked += character;
-      } else {
-        masked += " ";
-      }
-      continue;
-    }
-    if (quote !== null) {
-      if (character === quote && previous !== "`") {
-        quote = null;
-      }
-      masked += " ";
-      continue;
-    }
-    if (character === "'" || character === "\"") {
-      quote = character;
-      masked += " ";
-      continue;
-    }
-    if (character === "#") {
-      comment = true;
-      masked += " ";
-      continue;
-    }
-    masked += character;
-  }
-
-  return masked;
-}
-
-function commandInvocationPattern(command, global = false) {
-  return new RegExp(
-    `(?:^|[;|&=(\\r\\n])\\s*(?:&\\s*)?${command}\\b`,
-    global ? "giu" : "iu",
-  );
-}
-
-function hasCommandInvocation(source, command) {
-  return commandInvocationPattern(command).test(source);
-}
-
-function countCommandInvocations(source, command) {
-  return countMatches(source, commandInvocationPattern(command, true));
-}
-
-function splitShellSegments(source, executableSource, separatorKind) {
-  const segments = [];
-  let start = 0;
-
-  for (let index = 0; index < executableSource.length; index += 1) {
-    const character = executableSource[index];
-    const next = executableSource[index + 1] ?? "";
-    let separatorLength = 0;
-
-    if (separatorKind === "statement") {
-      if (character === ";" || character === "\n" || character === "\r") {
-        separatorLength = character === "\r" && next === "\n" ? 2 : 1;
-      } else if ((character === "&" && next === "&")
-          || (character === "|" && next === "|")) {
-        separatorLength = 2;
-      }
-    } else if (separatorKind === "pipeline"
-        && character === "|" && next !== "|") {
-      separatorLength = 1;
-    }
-
-    if (separatorLength === 0) {
-      continue;
-    }
-
-    segments.push({
-      source: source.slice(start, index),
-      executableSource: executableSource.slice(start, index),
-    });
-    index += separatorLength - 1;
-    start = index + 1;
-  }
-
-  segments.push({
-    source: source.slice(start),
-    executableSource: executableSource.slice(start),
-  });
-  return segments.filter((segment) => segment.executableSource.trim().length > 0);
-}
-
-function splitShellStatements(source, executableSource) {
-  return splitShellSegments(source, executableSource, "statement");
-}
-
-function splitPipelineStages(statement) {
-  return splitShellSegments(
-    statement.source,
-    statement.executableSource,
-    "pipeline",
-  );
-}
-
-function hasDynamicShellTarget(source) {
-  return /(?:\$\{|\$[A-Za-z_(]|%[A-Za-z_][A-Za-z0-9_]*%)/u.test(source);
-}
-
 function hasKnownHighVolumeTarget(source, policy) {
   const lowerSource = source.toLowerCase();
   return policy.boundedReads.knownHighVolumeNames.some(
@@ -238,107 +126,6 @@ function hasKnownHighVolumeTarget(source, policy) {
   ) || policy.boundedReads.knownHighVolumeExtensions.some(
     (extension) => lowerSource.includes(extension.toLowerCase()),
   );
-}
-
-function isSizeOrLineCountProbe(source) {
-  return /\bGet-Content\b[\s\S]*\)\.Count\b/iu.test(source);
-}
-
-function isProducerBoundedRead(source) {
-  return /\bGet-Content\b[\s\S]*-(?:TotalCount|Tail)\s+\d+\b/iu.test(source)
-    || /\bGet-Content\b[\s\S]*\[[ ]*\d+[ ]*\.\.[ ]*\d+[ ]*\]/iu.test(source)
-    || /\b(?:head|tail)\b[\s\S]*\s-[nc]\s*\d+\b/iu.test(source);
-}
-
-function isProducerBoundedSearch(source) {
-  return /\brg\b[\s\S]*(?:\s-m\s*\d+\b|\s--max-count(?:=|\s+)\d+\b)/iu.test(source);
-}
-
-function isImmediateOutputBound(source) {
-  return /^\s*Select-Object\b[\s\S]*-(?:First|Last)\s+\d+\b/iu.test(source);
-}
-
-function isImmediateLineCount(source) {
-  return /^\s*Measure-Object\b[\s\S]*-Line\b/iu.test(source);
-}
-
-function isBroadSearch(source) {
-  return /\brg\b[\s\S]*(?:\s(?:\.|\/|[A-Za-z]:\\)[\s'"]*$|\s--files(?:\s|$))/iu.test(source);
-}
-
-function hasMultipleLiteralPaths(commandSource) {
-  return /\bGet-Content\b[\s\S]*['"][^'"]+['"]\s*,\s*['"][^'"]+['"]/iu.test(commandSource);
-}
-
-function classifyShellRead(source, policy) {
-  const executableSource = maskShellQuotedAndCommentText(source);
-  const statements = splitShellStatements(source, executableSource);
-  const classifiedStatements = statements.map((statement) => ({
-    statement,
-    contentReadCount: countCommandInvocations(
-      statement.executableSource,
-      "(?:Get-Content|head|tail)",
-    ),
-    searchCount: countCommandInvocations(statement.executableSource, "rg"),
-  }));
-  const operationCount = classifiedStatements.reduce(
-    (total, candidate) => total + candidate.contentReadCount + candidate.searchCount,
-    0,
-  );
-
-  if (operationCount === 0) {
-    return { safe: true };
-  }
-  if (operationCount > 1) {
-    return { deny: policy.boundedReads.denyReasons.multipleReads };
-  }
-
-  const classified = classifiedStatements.find(
-    (candidate) => candidate.contentReadCount + candidate.searchCount === 1,
-  );
-  const { statement } = classified;
-  const isContentRead = classified.contentReadCount === 1;
-  const isSearch = classified.searchCount === 1;
-  const pipelineStages = splitPipelineStages(statement);
-  const commandStageIndex = pipelineStages.findIndex((stage) => (
-    isContentRead
-      ? hasCommandInvocation(stage.executableSource, "(?:Get-Content|head|tail)")
-      : hasCommandInvocation(stage.executableSource, "rg")
-  ));
-  const commandStage = pipelineStages[commandStageIndex];
-  const nextStage = pipelineStages[commandStageIndex + 1];
-
-  if (hasMultipleLiteralPaths(commandStage.source)) {
-    return { deny: policy.boundedReads.denyReasons.multipleReads };
-  }
-  if (isContentRead
-      && (isSizeOrLineCountProbe(commandStage.executableSource)
-        || isProducerBoundedRead(commandStage.executableSource)
-        || (nextStage !== undefined
-          && (isImmediateOutputBound(nextStage.executableSource)
-            || isImmediateLineCount(nextStage.executableSource))))) {
-    return { safe: true };
-  }
-  if (isSearch
-      && (isProducerBoundedSearch(commandStage.executableSource)
-        || (nextStage !== undefined
-          && isImmediateOutputBound(nextStage.executableSource)))
-      && !isBroadSearch(commandStage.source)) {
-    return { safe: true };
-  }
-  if (hasDynamicShellTarget(commandStage.source)) {
-    return { guidance: policy.guidance.dynamicRead };
-  }
-  if (isSearch) {
-    if (isBroadSearch(commandStage.source)) {
-      return { deny: policy.boundedReads.denyReasons.broadSearch };
-    }
-    return { guidance: policy.guidance.ambiguousSearch };
-  }
-  if (hasKnownHighVolumeTarget(commandStage.source, policy)) {
-    return { deny: policy.boundedReads.denyReasons.knownHighVolume };
-  }
-  return { guidance: policy.guidance.ambiguousRead };
 }
 
 function structuredPath(argumentsValue) {
@@ -407,13 +194,11 @@ function classifyStructuredRead(call, policy) {
 }
 
 function classifyBoundedRead(call, policy) {
-  if (call.kind === "shell") {
-    return classifyShellRead(call.source, policy);
-  }
-  if (call.kind === "structured") {
-    return classifyStructuredRead(call, policy);
-  }
-  return { safe: true };
+  // PostToolUse handles actual truncation of Bash tool results.
+  // Structured MCP reads still need pre-execution protection.
+  return call.kind === "structured"
+    ? classifyStructuredRead(call, policy)
+    : { safe: true };
 }
 
 function scanJavaScriptSource(source) {

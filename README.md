@@ -1,7 +1,8 @@
 # Codex Customization
 
-User-level instructions and `PreToolUse`/`PostToolUse` guardrails for an
-independently installed Codex ACP agent, including IntelliJ IDEA Custom ACP.
+User-level Codex ACP guardrails: `PostToolUse` detects truncated Bash
+results; `PreToolUse` checks structured MCP reads and `ALL_TOOLS` discovery.
+Supports IntelliJ IDEA Custom ACP Agent.
 
 ## Install (Windows)
 
@@ -41,8 +42,9 @@ node .\hooks\tests\run-tests.mjs
 Then use a fresh IDEA Custom ACP chat for two shell commands:
 
 - `Write-Output 'ok'` should execute normally.
-- `Get-Content -Raw -LiteralPath 'AGENTS.md'` should be blocked before
-  execution by the bounded-read policy (the file need not exist).
+- `Get-Content -Raw -LiteralPath 'AGENTS.md'` should no longer be blocked
+  by `PreToolUse` solely because of its name. `PostToolUse` blocks only
+  if the completed shell result actually contains a truncation warning.
 
 CLI-only hook execution does not prove IDEA enforcement. Earlier C1–C4
 diagnostics established hook transport and ENGINE enforcement through IDEA.
@@ -81,8 +83,9 @@ This deliberately covers only the verified Codex shell warning format.
 The hook cannot undo side effects of a completed command or guarantee the
 CLI hides all printed lines. A file containing the exact standalone
 warning could trigger a false positive; an unfamiliar truncation format
-or an oversized hook event (>1 MiB) is not caught. The original
-`PreToolUse` remains unchanged.
+or an oversized hook event (>1 MiB) is not caught. `PreToolUse` now
+leaves Bash read/search output sizing to `PostToolUse`, while retaining
+structured MCP read checks and `ALL_TOOLS` discovery rules.
 
 In a separate `CODEX_HOME` without `AGENTS.md` and with only this
 kind of `PostToolUse` handler, Codex CLI v0.165.0 and IDEA Custom ACP
@@ -155,5 +158,6 @@ Historical planning and diagnostic records remain in `plans/` and
 `HOOKS_PLAN.md`. They are reference material rather than mandatory workflow
 for routine maintenance.
 
-The hooks are best-effort guardrails for output completeness, bounded
-reads, and names-only `ALL_TOOLS` discovery; they are not a security sandbox.
+The hooks are best-effort guardrails for shell output completeness,
+structured MCP reads, and names-only `ALL_TOOLS` discovery; they are not
+a security sandbox.
