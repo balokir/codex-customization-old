@@ -391,9 +391,17 @@ assertGuidance(
   codeEnvelope("text(`${ALL_TOOLS}`); // " + SECRET_PAYLOAD),
 );
 
-function sha256(path) {
-  return createHash("sha256").update(readFileSync(path)).digest("hex");
+function sha256Text(text) {
+  // Git may check out these UTF-8 source files using CRLF on Windows.
+  // Verify canonical file content without depending on checkout line endings.
+  return createHash("sha256").update(text.replace(/\r\n/gu, "\n"), "utf8").digest("hex");
 }
+
+function sha256(path) {
+  return sha256Text(readFileSync(path, "utf8"));
+}
+
+assert.equal(sha256Text("a\nb\n"), sha256Text("a\r\nb\r\n"));
 
 function pathExists(path) {
   try {
